@@ -3,7 +3,6 @@ package dev.superficialcake.dankhelper.handlers
 import dev.superficialcake.dankhelper.Util.praseSuffixedNum
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
-import java.math.BigDecimal
 
 object MessageHandler {
 

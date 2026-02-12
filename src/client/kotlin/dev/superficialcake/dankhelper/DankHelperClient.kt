@@ -4,11 +4,9 @@ import dev.superficialcake.dankhelper.handlers.DataHandler
 import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.MessageHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
-import dev.superficialcake.dankhelper.handlers.StatsManager
 import dev.superficialcake.dankhelper.ui.DankHud
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.fabric.api.networking.v1.PacketSender
