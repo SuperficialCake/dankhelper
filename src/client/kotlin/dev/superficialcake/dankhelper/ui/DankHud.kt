@@ -25,7 +25,7 @@ object DankHud : HudRenderCallback {
             "§2§lSession Time:",
             "§r${Util.getFormattedTime(DankHelperClient.startTime)}",
             "§7=================",
-            "§2§lMPM: §r${StatsManager.avgMpm}",
+            "§a§lMPM: §r${StatsManager.avgMpm}",
             "§b§lTPM: §r${StatsManager.avgTpm}",
             "§e§lCPM: §r${StatsManager.avgCpm}",
             "§6§lKPM: §r${StatsManager.avgKpm}",
@@ -78,7 +78,7 @@ object DankHud : HudRenderCallback {
         val min = historySnapshot.minOrNull() ?: 0.0
         val range = (max - min).coerceAtLeast(1.0)
 
-        val stepX = width.toDouble() / (StatsManager.maxHistory - 1)
+        val stepX = width.toDouble() / (StatsManager.MAX_HISTORY - 1)
 
         for (i in 0 until historySnapshot.size - 1) {
             val x1 = x + (i * stepX).toInt()

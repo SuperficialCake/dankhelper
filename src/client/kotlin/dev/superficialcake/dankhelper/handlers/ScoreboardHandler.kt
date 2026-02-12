@@ -16,7 +16,7 @@ object ScoreboardHandler{
     private var initialBM: Long = -1L
     var sessionBM: Long = 0L
 
-    fun register(){
+    fun init(){
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
             tickCounter++
 

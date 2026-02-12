@@ -1,6 +1,7 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.Util.praseSuffixedNum
+import dev.superficialcake.dankhelper.Util
+import dev.superficialcake.dankhelper.Util.parseSuffixedNum
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
@@ -8,6 +9,8 @@ object MessageHandler {
 
     private var lastProcessTime: Long = 0
     private val MINING_PATTERN = """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings""".toRegex()
+    private val CF_SUMMARY_PATTERN = """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings""".toRegex()
+    private val FF_SUMMARY_PATTERN = """([\d.,]+)\s+Tokens,\s+and\s+([\d.,]+)\s+rare keys\s+from\s+([\d.,]+)\s+fish\s+with\s+([\d.,]+)\s+casts""".toRegex()
     private var inCF: Boolean = false
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
@@ -19,10 +22,40 @@ object MessageHandler {
         val text = message.string
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
             inCF = true
+
+            Util.showToast("Champion Frenzy Started", "A Champion Frenzy has started\nUI averages will not update for the duration of CF")
         }
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
             inCF = false
+            Util.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended\nUI averages will now update normally")
         }
+
+        when {
+            text.startsWith("(ChampionFrenzy) You've earned") -> {
+                val match = CF_SUMMARY_PATTERN.find(text) ?: return
+                val (money, tokens, crates, keys, blocks, swings) = match.destructured
+
+                // FIX: Use praseSuffixedNum so "$1.5B" becomes "1500000000" in the CSV
+                var moneyVal = parseSuffixedNum(money).toPlainString()
+                moneyVal = "=\"$moneyVal\""
+
+                val csvRow = "$moneyVal,${tokens.replace(",", "")},${crates.replace(",", "")}," +
+                        "${keys.replace(",", "")},${blocks.replace(",", "")},${swings.replace(",", "")}"
+
+                DataHandler.saveFrenzy("champion", "Money,Tokens,Crates,Keys,Blocks,Swings", csvRow)
+            }
+
+            text.startsWith("(FishingFrenzy) You've earned") -> {
+                val match = FF_SUMMARY_PATTERN.find(text) ?: return
+                val (tokens, keys, fish, casts) = match.destructured
+
+                val csvRow = "${tokens.replace(",", "")},${keys.replace(",", "")}," +
+                        "${fish.replace(",", "")},${casts.replace(",", "")}"
+
+                DataHandler.saveFrenzy("fishing", "Tokens,Keys,Fish,Casts", csvRow)
+            }
+        }
+
         if (!text.startsWith("(Mining) You've earned")) return
 
         val currentTime = System.currentTimeMillis()
@@ -39,7 +72,7 @@ object MessageHandler {
         val match = MINING_PATTERN.find(text) ?: return
         val (moneyStr, tokensStr, crates, keys, blocks, swings) = match.destructured
 
-        val moneyVal = praseSuffixedNum(moneyStr)
+        val moneyVal = parseSuffixedNum(moneyStr)
         val tokensVal = tokensStr.replace(",", "").toDoubleOrNull()?.toLong() ?: 0L
 
         val cratesVal = crates.replace(",", "").toLongOrNull() ?: 0L
@@ -49,5 +82,4 @@ object MessageHandler {
 
         StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal)
     }
-
 }

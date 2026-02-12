@@ -20,21 +20,31 @@ object DankHelperClient : ClientModInitializer {
 
 	var isConnected: Boolean = false
 	var startTime: Long = 0L
+	var initialSession: Boolean = true
 
 	override fun onInitializeClient() {
 
 		HudRenderCallback.EVENT.register(DankHud)
 
 		DataHandler.init()
-		KeybindHandler.register()
-		ScoreboardHandler.register()
+		KeybindHandler.init()
+		ScoreboardHandler.init()
 
 		ClientPlayConnectionEvents.JOIN.register{ handler: ClientPlayNetworkHandler, sender: PacketSender, client: MinecraftClient ->
 			val serverData = client.currentServerEntry
 			val ipAddress = serverData?.address?.lowercase() ?: ""
 
 			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
+
+				if(initialSession) {
+
+					Util.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")
+
+					!initialSession
+				}
+
 				logger.info("Connected to DankPrison")
+
 				Util.resetAll()
 				startTime = System.currentTimeMillis()
 				isConnected = true

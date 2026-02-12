@@ -20,7 +20,7 @@ object StatsManager {
     var avgKpm = "0"
     val moneyHistory = mutableListOf<Double>()
     val tokenHistory = mutableListOf<Double>()
-    val maxHistory = 15
+    const val MAX_HISTORY = 15
 
     fun resetStats(){
         avgMpm = "0"
@@ -44,8 +44,8 @@ object StatsManager {
 
     fun updateStats(money: BigDecimal, tokens: Long, crates: Long, keys: Long, swings: Long, blocks: Long){
 
-        if(moneyHistory.size >= maxHistory) moneyHistory.removeAt(0)
-        if(tokenHistory.size >= maxHistory) tokenHistory.removeAt(0)
+        if(moneyHistory.size >= MAX_HISTORY) moneyHistory.removeAt(0)
+        if(tokenHistory.size >= MAX_HISTORY) tokenHistory.removeAt(0)
 
         moneyHistory.add(money.toDouble())
         tokenHistory.add(tokens.toDouble())
@@ -65,6 +65,17 @@ object StatsManager {
         avgKpm = "%,d".format(sumKeys / totalUpdates)
         avgBpm = "%,d".format(sumBlocks / totalUpdates)
         avgSpm = "%,d".format(sumSwings / totalUpdates)
+
+
+        DataHandler.logStats(
+            money.toDouble(),
+            tokens,
+            crates,
+            keys,
+            blocks,
+            swings,
+            ScoreboardHandler.sessionBM
+        )
 
     }
 

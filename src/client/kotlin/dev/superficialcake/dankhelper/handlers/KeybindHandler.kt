@@ -16,13 +16,13 @@ object KeybindHandler {
 
     var showUI: Boolean = true
 
-    fun register(){
+    fun init(){
 
         resetSessionKey = registerKeyBinding(
             KeyBinding(
                 "key.dankhelper.resetSessionStats",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_R,
+                GLFW.GLFW_KEY_END,
                 CATEGORY
             )
         )
