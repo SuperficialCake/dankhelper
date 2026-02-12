@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "dankhelper",
+	"version": "${version}",
+	"name": "Dank Helper",
+	"description": "THIS MOD IS NOT DIRECTLY AFFILIATED WITH DANK PRISON!\nTHIS MOD IS A COMMUNITY PROJECT\n\nProvides helpful UI tools for the DankPrison minecraft server",
+	"authors": [
+		"SuperficialCake"
+	],
+	"license": "ASL 2.0",
+	"icon": "assets/dankhelper/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "dev.superficialcake.dankhelper.DankHelper",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "dev.superficialcake.dankhelper.DankHelperClient",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"dankhelper.mixins.json",
+		{
+			"config": "dankhelper.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	}
+}
