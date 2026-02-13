@@ -5,6 +5,7 @@ import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.toast.SystemToast
+import net.minecraft.text.OrderedText
 import net.minecraft.text.Text
 import java.math.BigDecimal
 import java.util.Locale
@@ -18,7 +19,7 @@ object Util {
         ScoreboardHandler.reset()
         DataHandler.init()
 
-        if(!DankHelperClient.initialSession) showToast("Reset Session", "The session has been reset! New CSV has been generated, and UI reset")
+        if(!DankHelperClient.initialSession) showToast("Session Reset", "The session has been reset! New CSV has been generated, and UI reset")
 
     }
 

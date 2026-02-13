@@ -4,6 +4,7 @@ import dev.superficialcake.dankhelper.handlers.DataHandler
 import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.MessageHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
+import dev.superficialcake.dankhelper.handlers.StatsManager
 import dev.superficialcake.dankhelper.ui.DankHud
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -25,27 +26,22 @@ object DankHelperClient : ClientModInitializer {
 	override fun onInitializeClient() {
 
 		HudRenderCallback.EVENT.register(DankHud)
-
-		DataHandler.init()
 		KeybindHandler.init()
 		ScoreboardHandler.init()
+		ClientReceiveMessageEvents.GAME.register(MessageHandler::onGameMessage)
 
 		ClientPlayConnectionEvents.JOIN.register{ handler: ClientPlayNetworkHandler, sender: PacketSender, client: MinecraftClient ->
 			val serverData = client.currentServerEntry
 			val ipAddress = serverData?.address?.lowercase() ?: ""
 
 			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
-
 				if(initialSession) {
-
 					Util.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")
-
 					initialSession = false
 				}
 
-				logger.info("Connected to DankPrison")
-
 				Util.resetAll()
+				logger.info("Connected to DankPrison")
 				startTime = System.currentTimeMillis()
 				isConnected = true
 			} else{
@@ -54,11 +50,8 @@ object DankHelperClient : ClientModInitializer {
 		}
 
 		ClientPlayConnectionEvents.DISCONNECT.register{ _, _ ->
+			StatsManager.forceSave()
 			isConnected = false
-			Util.resetAll()
 		}
-
-		ClientReceiveMessageEvents.GAME.register(MessageHandler::onGameMessage)
-
 	}
 }

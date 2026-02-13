@@ -33,7 +33,7 @@ object DankHud : HudRenderCallback {
             "§d§lSPM: §r${StatsManager.avgSpm}",
             "§c§lBPM: §r${StatsManager.avgBpm}",
             "§5§lBM: §r${ScoreboardHandler.formattedSessionBM}",
-            "§b§lFortune Gained: §r${StatsManager.sumFortune}"
+            "§b§lFortune Gained: §r${"%,d".format(StatsManager.sumFortune)}"
         )
 
         val maxTextWidth = lines.maxOf{textRenderer.getWidth(it)}

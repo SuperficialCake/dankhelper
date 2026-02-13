@@ -38,14 +38,17 @@ object ScoreboardHandler{
                 val match = Regex("""[\d,]+""").find(fullLine)
                 val currentTotalBM = match?.value?.replace(",", "")?.toLongOrNull() ?: continue
 
-                // 1. If this is the first time we see the value, set the offset
                 if (initialBM == -1L) {
                     initialBM = currentTotalBM
                     lastSeenBM = currentTotalBM
                     logger.info("Session Start BM captured: $initialBM")
                 }
 
-                // 2. Calculate session progress
+                if (currentTotalBM < lastSeenBM){
+                    initialBM -= lastSeenBM
+                }
+
+                lastSeenBM = currentTotalBM
                 sessionBM = currentTotalBM - initialBM
 
                 formattedSessionBM = "%,d".format(sessionBM)

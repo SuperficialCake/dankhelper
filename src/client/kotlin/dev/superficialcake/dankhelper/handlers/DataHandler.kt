@@ -37,7 +37,7 @@ object DataHandler {
 
         currentSessionFile = File(sessionsFolder, "$date-$sessionNum.csv")
 
-        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM\n"
+        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune\n"
         currentSessionFile.writeText(header)
     }
 
@@ -63,10 +63,10 @@ object DataHandler {
     }
 
 
-    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long){
+    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long){
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
-        val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM"
+        val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune"
 
         try {
             currentSessionFile.appendText("$row\n")

@@ -35,13 +35,14 @@ object MessageHandler {
                 val matchFortune = FORTUNE_PATTERN.find(text) ?: return
                 val (source, amount) = matchFortune.destructured
 
-                StatsManager.sumFortune += amount.toLong()
+                StatsManager.addFortune(amount.toLong())
+                logger.info("Fortune increased to ${StatsManager.sumFortune}")
             }
 
             text.startsWith("(ChampionFrenzy) You've earned") -> {
                 val match = MINING_PATTERN.find(text) ?: return
                 val (money, tokens, crates, keys, blocks, swings) = match.destructured
-                val moneyVal = parseSuffixedNum(money).toDouble()
+                val moneyVal = parseSuffixedNum(money).toPlainString()
 
                 val csvRow = "$moneyVal,${tokens.replace(",", "")},${crates.replace(",", "")}," +
                         "${keys.replace(",", "")},${blocks.replace(",", "")},${swings.replace(",", "")}"

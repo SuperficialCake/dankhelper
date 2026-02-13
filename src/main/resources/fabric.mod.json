@@ -7,7 +7,10 @@
 	"authors": [
 		"SuperficialCake"
 	],
-	"license": "ASL 2.0",
+	"contact": {
+		"email": "dankhelper@superficialcake.dev"
+	},
+	"license": "GPL-3.0-ONLY",
 	"icon": "assets/dankhelper/icon.png",
 	"environment": "client",
 	"entrypoints": {
@@ -37,5 +40,9 @@
 		"java": ">=17",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"cloth-config": "11.1.136",
+		"modmenu": "7.2.2"
 	}
 }

@@ -12,7 +12,6 @@ object StatsManager {
     private var sumCrates = 0L
     private var sumKeys = 0L
 
-
     var sumFortune = 0L
     var avgMpm = "0"
     var avgTpm = "0"
@@ -77,7 +76,8 @@ object StatsManager {
             keys,
             blocks,
             swings,
-            ScoreboardHandler.sessionBM
+            ScoreboardHandler.sessionBM,
+            sumFortune
         )
 
     }
@@ -97,5 +97,23 @@ object StatsManager {
         return "${shortNumber}${suffixes[index]}"
     }
 
+    fun addFortune(amount: Long){
+        sumFortune += amount
+    }
+
+    fun forceSave() {
+        if (totalUpdates == 0) return
+
+        DataHandler.logStats(
+            sumMoney.toPlainString(),
+            sumTokens,
+            sumCrates,
+            sumKeys,
+            sumBlocks,
+            sumSwings,
+            ScoreboardHandler.sessionBM,
+            sumFortune
+        )
+    }
 
 }
