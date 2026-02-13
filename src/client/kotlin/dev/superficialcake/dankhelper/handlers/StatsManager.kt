@@ -12,6 +12,8 @@ object StatsManager {
     private var sumCrates = 0L
     private var sumKeys = 0L
 
+
+    var sumFortune = 0L
     var avgMpm = "0"
     var avgTpm = "0"
     var avgBpm = "0"
@@ -37,6 +39,7 @@ object StatsManager {
         sumSwings = 0L
         sumCrates = 0L
         sumKeys = 0L
+        sumFortune = 0L
 
         moneyHistory.clear()
         tokenHistory.clear()
@@ -68,7 +71,7 @@ object StatsManager {
 
 
         DataHandler.logStats(
-            money.toDouble(),
+            money.toPlainString(),
             tokens,
             crates,
             keys,

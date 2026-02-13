@@ -40,7 +40,7 @@ object DankHelperClient : ClientModInitializer {
 
 					Util.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")
 
-					!initialSession
+					initialSession = false
 				}
 
 				logger.info("Connected to DankPrison")

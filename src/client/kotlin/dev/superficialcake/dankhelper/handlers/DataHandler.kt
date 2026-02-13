@@ -56,14 +56,14 @@ object DataHandler {
 
         try {
             file.writeText(content)
-            Util.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to $folder")
+            Util.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/")
         } catch (e: Exception){
             e.printStackTrace()
         }
     }
 
 
-    fun logStats(money: Double, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long){
+    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long){
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
         val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM"

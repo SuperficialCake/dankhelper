@@ -14,6 +14,7 @@ object ScoreboardHandler{
     private const val SCAN_INTERVAL = 10
 
     private var initialBM: Long = -1L
+    private var lastSeenBM: Long = -1L
     var sessionBM: Long = 0L
 
     fun init(){
@@ -40,6 +41,7 @@ object ScoreboardHandler{
                 // 1. If this is the first time we see the value, set the offset
                 if (initialBM == -1L) {
                     initialBM = currentTotalBM
+                    lastSeenBM = currentTotalBM
                     logger.info("Session Start BM captured: $initialBM")
                 }
 
@@ -53,6 +55,7 @@ object ScoreboardHandler{
 
     fun reset(){
         initialBM = -1L
+        lastSeenBM = -1L
         sessionBM = 0L
     }
 }
