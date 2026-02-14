@@ -13,6 +13,14 @@ This mod adds a HUD to show helpful stats related to DankPrison. The mod will al
 Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in `.minecraft/dankhelper/frenzies/<frenzy_type>`.
 
 
+## How It Works
+
+The mod listens to your chat for your mining summaries, make sure you have them toggled on! 
+It then parses the message, and starts averaging your stats for the duration you are logged in, or manually end a session via the keybind.
+SessionBM are tracked by hooking into the scoreboard, so if your DBM aren't displayed, the mod cannot track your session BM.
+
+The mod also listens for any message starting with `(*) Increased Fortune` to track your fortune gains.
+
 ## Installation
 
 Install Fabric loader for version 1.20.1
