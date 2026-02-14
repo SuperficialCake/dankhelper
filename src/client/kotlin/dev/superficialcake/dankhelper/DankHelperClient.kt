@@ -42,7 +42,6 @@ object DankHelperClient : ClientModInitializer {
 			val ipAddress = serverData?.address?.lowercase() ?: ""
 
 			UtilFunctions.resetAll()
-
 			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
 				if(initialSession) {
 					UtilFunctions.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")

@@ -27,7 +27,7 @@ object DankHud : HudRenderCallback {
         val textRenderer = client.textRenderer
         val x = config.hudX
         val y = config.hudY
-        val padding = 4
+        val padding = 6
 
         val lines = mutableListOf<String>()
 
@@ -54,18 +54,18 @@ object DankHud : HudRenderCallback {
         if (config.showFortune) lines.add("§b§lFortune Gained: §r${StatsManager.sumFortune}")
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
-        val graphWidth = 100
-        val labelWidth = 30
+        val graphWidth = 85
+        val labelWidth = 25
 
 
         currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + (padding * 2)
 
         val textHeight = lines.size * 10
         var graphsSectionHeight = 0
-        if (config.showMoneyGraph) graphsSectionHeight += 55
-        if (config.showTokenGraph) graphsSectionHeight += 55
+        if (config.showMoneyGraph) graphsSectionHeight += 50
+        if (config.showTokenGraph) graphsSectionHeight += 50
 
-        currentHeight = textHeight + graphsSectionHeight + padding
+        currentHeight = textHeight + graphsSectionHeight
 
         drawContext.fill(x - padding, y - padding, x + currentWidth, y + currentHeight, 0x90000000.toInt())
 
@@ -76,7 +76,7 @@ object DankHud : HudRenderCallback {
         var graphY = y + textHeight + 5
         if (config.showMoneyGraph) {
             drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
-            graphY += 55
+            graphY += 45
         }
         if (config.showTokenGraph) {
             drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
@@ -112,7 +112,6 @@ object DankHud : HudRenderCallback {
         val minStr = UtilFunctions.formatNumber(min)
 
         context.drawTextWithShadow(textRenderer, maxStr, x + width + 4, y, color)
-        context.drawTextWithShadow(textRenderer, label, x + width + 4, y + (height / 2) - 4, 0xFFFFFFFF.toInt())
         context.drawTextWithShadow(textRenderer, minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
     }
 
