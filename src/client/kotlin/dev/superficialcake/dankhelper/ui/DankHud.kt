@@ -51,7 +51,11 @@ object DankHud : HudRenderCallback {
         if (config.showSPM) lines.add("§d§lSPM: §r${StatsManager.avgSpm}")
         if (config.showBPM) lines.add("§c§lBPM: §r${StatsManager.avgBpm}")
         if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
-        if (config.showFortune) lines.add("§b§lFortune Gained: §r${StatsManager.sumFortune}")
+        if (config.showFortune) {
+            var formattedFortune = StatsManager.sumFortune.toString()
+            formattedFortune = "%,d".format(formattedFortune)
+            lines.add("""§b§lFortune: §r${formattedFortune}""")
+        }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
         val graphWidth = 85
