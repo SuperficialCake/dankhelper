@@ -8,7 +8,10 @@ This project is a community driven tool and is not officially endorsed by or aff
 
 This mod adds a HUD to show helpful stats related to DankPrison. The mod will also log your ChampionFrenzies and FishingFrenzies.
 
+![Preview of In-Game UI](./resources/images/preview.png)
+
 Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in `.minecraft/dankhelper/frenzies/<frenzy_type>`.
+
 
 ## Installation
 
