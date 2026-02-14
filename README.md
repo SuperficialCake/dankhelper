@@ -12,6 +12,17 @@ This mod adds a HUD to show helpful stats related to DankPrison. The mod will al
 
 Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in `.minecraft/dankhelper/frenzies/<frenzy_type>`.
 
+### Default Keybinds
+
+The mod has a few keybinids:
+
+> END to manually end a session & reset the HUD.
+> 
+> H to show or hide the HUD
+> 
+> Backslash to open the config
+> 
+> Comma to move the UI
 
 ## How It Works
 
@@ -29,13 +40,11 @@ Install [FabricAPI](https://modrinth.com/mod/fabric-api/versions?g=1.20.1)
 
 Install [Fabric Lang Kotlin](https://modrinth.com/mod/fabric-language-kotlin)
 
-### Recommended
-
 Install [Cloth Config](https://modrinth.com/mod/cloth-config/versions?g=1.20.1&l=fabric)
 
 Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=1.20.1)
 
-Download the latest jar, or compile from source.
+Download the latest jar from the [Releases Page](https://github.com/SuperficialCake/dankhelper/releases), or compile from source.
 
 ## Contribution
 
