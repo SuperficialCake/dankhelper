@@ -1,5 +1,18 @@
 {
   "key.categories.dankhelper": "Dank Helper",
   "key.dankhelper.hideUI": "Hide UI",
-  "key.dankhelper.resetSessionStats": "Reset Session Stats"
+  "key.dankhelper.resetSessionStats": "Reset Session Stats",
+  "text.autoconfig.dankhelper.option.hudX": "X Position",
+  "text.autoconfig.dankhelper.option.hudY": "Y Position",
+  "text.autoconfig.dankhelper.option.showSessionTime": "Show Session Time",
+  "text.autoconfig.dankhelper.option.showMPM": "Show Money Per Minute",
+  "text.autoconfig.dankhelper.option.showTPM": "Show Tokens Per Minute",
+  "text.autoconfig.dankhelper.option.showCPM": "Show Crates Per Minute",
+  "text.autoconfig.dankhelper.option.showKPM": "Show Keys Per Minute",
+  "text.autoconfig.dankhelper.option.showSPM": "Show Swings Per Minute",
+  "text.autoconfig.dankhelper.option.showBPM": "Show Blocks Per Minute",
+  "text.autoconfig.dankhelper.option.showBM": "Show Blocks Mined",
+  "text.autoconfig.dankhelper.option.showFortune": "Show Fortune",
+  "text.autoconfig.dankhelper.option.showMoneyGraph": "Show Money Graph",
+  "text.autoconfig.dankhelper.option.showTokenGraph": "Show Token Graph"
 }

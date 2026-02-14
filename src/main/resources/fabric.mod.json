@@ -20,6 +20,11 @@
 				"adapter": "kotlin"
 			}
 		],
+		"modmenu": [
+			{
+				"value": "dev.superficialcake.dankhelper.compat.ModMenuIntegration"
+			}
+		],
 		"client": [
 			{
 				"value": "dev.superficialcake.dankhelper.DankHelperClient",

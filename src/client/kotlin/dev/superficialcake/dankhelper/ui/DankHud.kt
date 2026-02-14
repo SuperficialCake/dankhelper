@@ -1,10 +1,12 @@
 package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.DankHelperClient
-import dev.superficialcake.dankhelper.Util
+import dev.superficialcake.dankhelper.util.UtilFunctions
+import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
+import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
@@ -12,57 +14,73 @@ import net.minecraft.client.gui.DrawContext
 
 object DankHud : HudRenderCallback {
 
+    var currentHeight = 0
+    var currentWidth = 0
+
     override fun onHudRender(drawContext: DrawContext, tickDelta: Float) {
+
         val client = MinecraftClient.getInstance()
         if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI || client.options.debugEnabled) return
 
+        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+
         val textRenderer = client.textRenderer
-        var x = 10
-        var y = 60
+        val x = config.hudX
+        val y = config.hudY
         val padding = 4
 
-        val lines = listOf(
-            "§2§lSession Time:",
-            "§r${Util.getFormattedTime(DankHelperClient.startTime)}",
-            "§7=================",
-            "§a§lMPM: §r${StatsManager.avgMpm}",
-            "§b§lTPM: §r${StatsManager.avgTpm}",
-            "§e§lCPM: §r${StatsManager.avgCpm}",
-            "§6§lKPM: §r${StatsManager.avgKpm}",
-            "§7=================",
-            "§d§lSPM: §r${StatsManager.avgSpm}",
-            "§c§lBPM: §r${StatsManager.avgBpm}",
-            "§5§lBM: §r${ScoreboardHandler.formattedSessionBM}",
-            "§b§lFortune Gained: §r${"%,d".format(StatsManager.sumFortune)}"
-        )
+        val lines = mutableListOf<String>()
 
-        val maxTextWidth = lines.maxOf{textRenderer.getWidth(it)}
-        val graphHeight = 25
-        val graphSpacing = 5
-        val graphWidth = maxTextWidth
-
-        val labelWidth = 35
-        val totalWidth = maxTextWidth + labelWidth + (padding * 2)
-        val totalTextHeight = (lines.size * 10)
-        val totalHeight = totalTextHeight + (graphHeight * 2) + (graphSpacing * 2) + padding
-
-
-        drawContext.fill(x - padding, y - padding, x + totalWidth, y + totalHeight -2, 0x90000000.toInt() )
-
-        var currentY = y
-        for (line in lines){
-            drawContext.drawTextWithShadow(textRenderer, line, x, currentY, 0xFFFFFF)
-            currentY += 10
+        if (config.showSessionTime) {
+            lines.add("§2§lSession Time:")
+            lines.add("§r${UtilFunctions.getFormattedTime(DankHelperClient.startTime)}")
+            lines.add("§7=================")
         }
 
-        currentY += 5
+        if (config.showMPM) lines.add("§a§lMPM: §r${StatsManager.avgMpm}")
+        if (config.showTPM) lines.add("§b§lTPM: §r${StatsManager.avgTpm}")
+        if (config.showCPM) lines.add("§e§lCPM: §r${StatsManager.avgCpm}")
+        if (config.showKPM) lines.add("§6§lKPM: §r${StatsManager.avgKpm}")
 
-        val graphX = x
-        val graphYBase = currentY
+        if ((config.showMPM || config.showTPM || config.showCPM || config.showKPM) &&
+            (config.showSPM || config.showBPM || config.showBM || config.showFortune)
+        ) {
+            lines.add("§7=================")
+        }
 
-        drawGraph(drawContext, textRenderer, graphX, graphYBase, graphWidth, graphHeight, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
-        drawGraph(drawContext, textRenderer, graphX, graphYBase + graphHeight + graphSpacing, graphWidth, graphHeight, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
+        if (config.showSPM) lines.add("§d§lSPM: §r${StatsManager.avgSpm}")
+        if (config.showBPM) lines.add("§c§lBPM: §r${StatsManager.avgBpm}")
+        if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
+        if (config.showFortune) lines.add("§b§lFortune Gained: §r${StatsManager.sumFortune}")
 
+        val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
+        val graphWidth = 100
+        val labelWidth = 30
+
+
+        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + (padding * 2)
+
+        val textHeight = lines.size * 10
+        var graphsSectionHeight = 0
+        if (config.showMoneyGraph) graphsSectionHeight += 55
+        if (config.showTokenGraph) graphsSectionHeight += 55
+
+        currentHeight = textHeight + graphsSectionHeight + padding
+
+        drawContext.fill(x - padding, y - padding, x + currentWidth, y + currentHeight, 0x90000000.toInt())
+
+        lines.forEachIndexed { i, line ->
+            drawContext.drawTextWithShadow(textRenderer, line, x, y + (i * 10), 0xFFFFFF)
+        }
+
+        var graphY = y + textHeight + 5
+        if (config.showMoneyGraph) {
+            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
+            graphY += 55
+        }
+        if (config.showTokenGraph) {
+            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
+        }
     }
 
     private fun drawGraph(context: DrawContext, textRenderer: TextRenderer, x: Int, y: Int, width: Int, height: Int, data: List<Double>, color: Int, label: String) {
@@ -78,7 +96,6 @@ object DankHud : HudRenderCallback {
         val max = historySnapshot.maxOrNull() ?: 1.0
         val min = historySnapshot.minOrNull() ?: 0.0
         val range = (max - min).coerceAtLeast(1.0)
-
         val stepX = width.toDouble() / (StatsManager.MAX_HISTORY - 1)
 
         for (i in 0 until historySnapshot.size - 1) {
@@ -91,10 +108,11 @@ object DankHud : HudRenderCallback {
             drawConnection(context, x1, y1, x2, y2, color)
         }
 
-        val maxStr = Util.formatNumber(max)
-        val minStr = Util.formatNumber(min)
+        val maxStr = UtilFunctions.formatNumber(max)
+        val minStr = UtilFunctions.formatNumber(min)
 
         context.drawTextWithShadow(textRenderer, maxStr, x + width + 4, y, color)
+        context.drawTextWithShadow(textRenderer, label, x + width + 4, y + (height / 2) - 4, 0xFFFFFFFF.toInt())
         context.drawTextWithShadow(textRenderer, minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
     }
 

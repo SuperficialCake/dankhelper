@@ -1,6 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.Util
+import dev.superficialcake.dankhelper.util.UtilFunctions
 import net.minecraft.client.MinecraftClient
 import java.io.File
 import java.time.LocalDate
@@ -16,8 +16,6 @@ object DataHandler {
     private val frenzyRoot: File = File(rootFolder, "frenzies")
 
     private lateinit var currentSessionFile: File
-    private var currentFrenzyFile: File? = null
-    private var currentFrenzyType: String = ""
 
     fun init(){
         if(!rootFolder.exists())rootFolder.mkdirs()
@@ -56,7 +54,7 @@ object DataHandler {
 
         try {
             file.writeText(content)
-            Util.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/")
+            UtilFunctions.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/")
         } catch (e: Exception){
             e.printStackTrace()
         }

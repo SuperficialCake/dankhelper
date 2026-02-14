@@ -1,7 +1,7 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.Util
-import dev.superficialcake.dankhelper.Util.parseSuffixedNum
+import dev.superficialcake.dankhelper.util.UtilFunctions
+import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
@@ -23,11 +23,11 @@ object MessageHandler {
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
             inCF = true
 
-            Util.showToast("Champion Frenzy Started", "A Champion Frenzy has started. UI updating paused")
+            UtilFunctions.showToast("Champion Frenzy Started", "A Champion Frenzy has started. UI updating paused")
         }
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
             inCF = false
-            Util.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended. UI updating resumed")
+            UtilFunctions.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended. UI updating resumed")
         }
 
         when {

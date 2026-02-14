@@ -1,6 +1,10 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.Util
+import dev.superficialcake.dankhelper.config.DankConfig
+import dev.superficialcake.dankhelper.ui.EditHud
+import dev.superficialcake.dankhelper.util.UtilFunctions
+import kotlinx.coroutines.Job
+import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding
 import net.minecraft.client.option.KeyBinding
@@ -13,10 +17,12 @@ object KeybindHandler {
 
     lateinit var hideUIKey: KeyBinding
     lateinit var resetSessionKey: KeyBinding
+    lateinit var moveUIKey: KeyBinding
+    lateinit var clothConfigKey: KeyBinding
 
     var showUI: Boolean = true
 
-    fun init(){
+    fun init() {
 
         resetSessionKey = registerKeyBinding(
             KeyBinding(
@@ -36,15 +42,41 @@ object KeybindHandler {
             )
         )
 
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick{ client ->
-            while (hideUIKey.wasPressed()){
+        moveUIKey = registerKeyBinding(
+            KeyBinding(
+                "key.dankhelper.move_ui",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_COMMA,
+                CATEGORY
+            )
+        )
+
+        clothConfigKey = registerKeyBinding(
+            KeyBinding(
+                "key.dankhelper.open_config",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_BACKSLASH,
+                CATEGORY
+            )
+        )
+
+        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
+            while (hideUIKey.wasPressed()) {
                 showUI = !showUI
             }
-            while (resetSessionKey.wasPressed()){
-                Util.resetAll()
+            while (resetSessionKey.wasPressed()) {
+                UtilFunctions.resetAll()
+            }
+            while (moveUIKey.wasPressed()) {
+                if (client.currentScreen == null) {
+                    client.setScreen(EditHud())
+                }
+            }
+            while (clothConfigKey.wasPressed()) {
+                client.setScreen(
+                    AutoConfig.getConfigScreen(DankConfig::class.java, client.currentScreen).get()
+                )
             }
         })
-
     }
-
 }

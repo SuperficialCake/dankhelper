@@ -1,16 +1,16 @@
-package dev.superficialcake.dankhelper
+package dev.superficialcake.dankhelper.util
 
+import dev.superficialcake.dankhelper.DankHelperClient
 import dev.superficialcake.dankhelper.handlers.DataHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.toast.SystemToast
-import net.minecraft.text.OrderedText
 import net.minecraft.text.Text
 import java.math.BigDecimal
 import java.util.Locale
 
-object Util {
+object UtilFunctions {
 
     fun resetAll(){
         DankHelperClient.startTime = System.currentTimeMillis()
@@ -56,7 +56,7 @@ object Util {
     }
 
     fun formatNumber(value: Double): String{
-        if (value < 1000) return String.format(Locale.US, "%.0f", value)
+        if (value < 1000) return String.Companion.format(Locale.US, "%.0f", value)
 
         val suffixes = listOf("", "K", "M", "B", "T", "Qd", "Qt", "Sx", "Sp")
         var current = value
@@ -67,7 +67,7 @@ object Util {
             index++
         }
 
-        return String.format(Locale.US, "%.1f%s", current, suffixes[index])
+        return String.Companion.format(Locale.US, "%.1f%s", current, suffixes[index])
     }
 
     fun getFormattedTime(startTime: Long): String{
