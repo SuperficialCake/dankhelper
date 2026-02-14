@@ -12,11 +12,17 @@ Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in
 
 ## Installation
 
-Install Fabric 1.20.1
+Install Fabric loader for version 1.20.1
 
-Install FabricAPI
+Install [FabricAPI](https://modrinth.com/mod/fabric-api/versions?g=1.20.1)
 
-Install Fabric Lang Kotlin
+Install [Fabric Lang Kotlin](https://modrinth.com/mod/fabric-language-kotlin)
+
+### Recommended
+
+Install [Cloth Config](https://modrinth.com/mod/cloth-config/versions?g=1.20.1&l=fabric)
+
+Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=1.20.1)
 
 Download the latest jar, or compile from source.
 
