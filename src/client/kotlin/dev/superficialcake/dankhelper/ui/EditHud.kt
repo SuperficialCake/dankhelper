@@ -27,7 +27,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
 
         context.drawCenteredTextWithShadow(
             textRenderer,
-            "Drag the box to move the HUD, save with ESC",
+            Text.translatable("text.ui.dankhelper.move_hud"),
             width / 2,
             20,
             0xFFFFFF

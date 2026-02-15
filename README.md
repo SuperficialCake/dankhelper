@@ -1,5 +1,7 @@
 # Dank Helper
 
+[Join Our Discord](https://discord.gg/VhGJcRsdam)
+
 ## Disclaimer
 
 This project is a community driven tool and is not officially endorsed by or affiliated with DankPrison.com or Dank420Girl.
@@ -30,7 +32,8 @@ The mod listens to your chat for your mining summaries, make sure you have them 
 It then parses the message, and starts averaging your stats for the duration you are logged in, or manually end a session via the keybind.
 SessionBM are tracked by hooking into the scoreboard, so if your DBM aren't displayed, the mod cannot track your session BM.
 
-The mod also listens for any message starting with `(*) Increased Fortune` to track your fortune gains.
+The mod also listens for any message starting with `(*) Increased Fortune` to track your fortune gains. Because of the way the messages are sent and listened to
+there is no way a player can mess with your fortune count or your summaries.
 
 ## Installation
 
