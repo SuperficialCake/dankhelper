@@ -1,5 +1,7 @@
 # Dank Helper
 
+[Join Our Discord](https://discord.gg/VhGJcRsdam)
+
 ## Disclaimer
 
 This project is a community driven tool and is not officially endorsed by or affiliated with DankPrison.com or Dank420Girl.
