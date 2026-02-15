@@ -11,11 +11,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.text.Text
 
 object DankHud : HudRenderCallback {
 
     var currentHeight = 0
     var currentWidth = 0
+    val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time")
 
     override fun onHudRender(drawContext: DrawContext, tickDelta: Float) {
 
@@ -29,10 +31,11 @@ object DankHud : HudRenderCallback {
         val y = config.hudY
         val padding = 6
 
+
         val lines = mutableListOf<String>()
 
         if (config.showSessionTime) {
-            lines.add("§2§lSession Time:")
+            lines.add("§2§l${translatedSessionTime}")
             lines.add("§r${UtilFunctions.getFormattedTime(DankHelperClient.startTime)}")
             lines.add("§7=================")
         }
