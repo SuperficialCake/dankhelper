@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.text.Text
+import net.minecraft.client.render.RenderTickCounter
 
 object DankHud : HudRenderCallback {
 
@@ -19,10 +20,10 @@ object DankHud : HudRenderCallback {
     var currentWidth = 0
     val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time")
 
-    override fun onHudRender(drawContext: DrawContext, tickDelta: Float) {
+    override fun onHudRender(drawContext: DrawContext, tickCounter: RenderTickCounter) {
 
         val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI || client.options.debugEnabled) return
+        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
 
         val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
 
@@ -35,7 +36,7 @@ object DankHud : HudRenderCallback {
         val lines = mutableListOf<String>()
 
         if (config.showSessionTime) {
-            lines.add("§2§l${translatedSessionTime}")
+            lines.add("§2§l${translatedSessionTime.string}")
             lines.add("§r${UtilFunctions.getFormattedTime(DankHelperClient.startTime)}")
             lines.add("§7=================")
         }
@@ -55,8 +56,7 @@ object DankHud : HudRenderCallback {
         if (config.showBPM) lines.add("§c§lBPM: §r${StatsManager.avgBpm}")
         if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
         if (config.showFortune) {
-            var formattedFortune = StatsManager.sumFortune.toString()
-            formattedFortune = "%,d".format(formattedFortune)
+            val formattedFortune = "%,d".format(StatsManager.sumFortune)
             lines.add("""§b§lFortune: §r${formattedFortune}""")
         }
 
