@@ -1,19 +1,22 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.DankHelper
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
 import dev.superficialcake.dankhelper.util.UtilFunctions
-import kotlinx.coroutines.Job
 import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.InputUtil
+import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
 
 object KeybindHandler {
 
-    private const val CATEGORY = "key.categories.dankhelper"
+    private val CATEGORY: KeyBinding.Category = KeyBinding.Category(
+        Identifier.of(DankHelper.MOD_ID, "general")
+    )
 
     lateinit var hideUIKey: KeyBinding
     lateinit var resetSessionKey: KeyBinding

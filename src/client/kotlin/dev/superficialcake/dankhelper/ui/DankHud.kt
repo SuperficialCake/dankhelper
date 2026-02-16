@@ -7,22 +7,21 @@ import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import me.shedaniel.autoconfig.AutoConfig
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.text.Text
 
-object DankHud : HudRenderCallback {
+object DankHud {
 
     var currentHeight = 0
     var currentWidth = 0
-    val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time")
+    val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
 
-    override fun onHudRender(drawContext: DrawContext, tickDelta: Float) {
+    fun onHudRender(drawContext: DrawContext) {
 
         val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI || client.options.debugEnabled) return
+        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
 
         val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
 
@@ -55,8 +54,7 @@ object DankHud : HudRenderCallback {
         if (config.showBPM) lines.add("§c§lBPM: §r${StatsManager.avgBpm}")
         if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
         if (config.showFortune) {
-            var formattedFortune = StatsManager.sumFortune.toString()
-            formattedFortune = "%,d".format(formattedFortune)
+            val formattedFortune = "%,d".format(StatsManager.sumFortune)
             lines.add("""§b§lFortune: §r${formattedFortune}""")
         }
 
@@ -77,7 +75,7 @@ object DankHud : HudRenderCallback {
         drawContext.fill(x - padding, y - padding, x + currentWidth, y + currentHeight, 0x90000000.toInt())
 
         lines.forEachIndexed { i, line ->
-            drawContext.drawTextWithShadow(textRenderer, line, x, y + (i * 10), 0xFFFFFF)
+            drawContext.drawText(textRenderer, Text.literal(line), x, y + (i * 10), 0xFFFFFFFF.toInt(), true)
         }
 
         var graphY = y + textHeight + 5
