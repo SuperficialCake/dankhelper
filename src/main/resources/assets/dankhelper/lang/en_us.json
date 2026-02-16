@@ -1,5 +1,5 @@
 {
-  "key.categories.dankhelper": "Dank Helper",
+  "key.categories.general": "Dank Helper",
   "key.dankhelper.hideUI": "Hide UI",
   "key.dankhelper.resetSessionStats": "Reset Session Stats",
   "text.autoconfig.dankhelper.option.hudX": "X Position",
@@ -15,6 +15,7 @@
   "text.autoconfig.dankhelper.option.showFortune": "Show Fortune",
   "text.autoconfig.dankhelper.option.showMoneyGraph": "Show Money Graph",
   "text.autoconfig.dankhelper.option.showTokenGraph": "Show Token Graph",
+  "text.autoconfig.dankhelper.title": "Dank Helper Config",
   "text.ui.dankhelper.move_hud": "Move the HUD by dragging the green square. Save with ESC",
   "text.hud.dankhelper.session_time": "Session Time"
 }
