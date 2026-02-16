@@ -32,20 +32,13 @@
 			}
 		]
 	},
-	"mixins": [
-		"dankhelper.mixins.json",
-		{
-			"config": "dankhelper.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.20.1",
+		"minecraft": "1.21.11",
 		"java": ">=17",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
-		"cloth-config": "11.1.136",
-		"modmenu": "7.2.2"
+		"cloth-config": "21.11.153",
+		"modmenu": ">=17.0.0-beta.0"
 	}
 }
