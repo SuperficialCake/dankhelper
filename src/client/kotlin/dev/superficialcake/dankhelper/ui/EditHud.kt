@@ -14,7 +14,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
 
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        super.renderBackground(context, mouseX, mouseY, delta )
+        super.render(context, mouseX, mouseY, delta )
 
         val config = configHolder.config
         val x = config.hudX

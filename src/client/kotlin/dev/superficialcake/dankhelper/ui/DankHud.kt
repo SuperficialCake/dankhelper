@@ -62,10 +62,10 @@ object DankHud : HudRenderCallback {
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
         val graphWidth = 85
-        val labelWidth = 15
+        val labelWidth = 25
 
 
-        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + ((padding * 2) + 3)
+        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + ((padding * 2))
 
         val textHeight = lines.size * 10
         var graphsSectionHeight = 0
