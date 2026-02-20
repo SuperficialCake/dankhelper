@@ -16,6 +16,7 @@ object DataHandler {
     private val frenzyRoot: File = File(rootFolder, "frenzies")
 
     private lateinit var currentSessionFile: File
+    private lateinit var currentCFFile: File
 
     fun init(){
         if(!rootFolder.exists())rootFolder.mkdirs()
@@ -39,6 +40,25 @@ object DataHandler {
         currentSessionFile.writeText(header)
     }
 
+    fun prepareCFFile(){
+        val cfFolder = File(frenzyRoot, "champion")
+        if (!cfFolder.exists()) cfFolder.mkdirs() // Ensure the folder exists
+
+        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        var cfNum = 1
+
+        while(File(cfFolder, "$date-$cfNum.csv").exists()){
+            cfNum++
+        }
+
+        // 2. Fixed unresolved 'sessionNum' to 'cfNum'
+        currentCFFile = File(cfFolder, "$date-$cfNum.csv")
+
+        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune\n"
+        // 3. Fixed targeting currentSessionFile to currentCFFile
+        currentCFFile.writeText(header)
+    }
+
     fun saveFrenzy(type: String, header: String, data: String) {
         val folder = File(frenzyRoot, type)
         if (!folder.exists()) folder.mkdirs()
@@ -49,7 +69,7 @@ object DataHandler {
 
         while (File(folder, "${type.uppercase()}-$date-$num.csv").exists()) { num++ }
 
-        val file = File(folder, "${type.uppercase()}-$date-$num.csv")
+        val file = File(folder, "${type.uppercase()}-$date-summary-$num.csv")
         val content = "Timestamp,${header}\n${timestamp},$data\n"
 
         try {
@@ -60,14 +80,15 @@ object DataHandler {
         }
     }
 
-
-    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long){
+    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long, isCF: Boolean = false){
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
         val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune"
 
+        val targetFile = if (isCF) currentCFFile else currentSessionFile
+
         try {
-            currentSessionFile.appendText("$row\n")
+            targetFile.appendText("$row\n")
         } catch (e:Exception) {
             e.printStackTrace()
         }
