@@ -21,6 +21,7 @@ object StatsManager {
     var avgKpm = "0"
     val moneyHistory = mutableListOf<Double>()
     val tokenHistory = mutableListOf<Double>()
+    val swingsHistory = mutableListOf<Double>()
     const val MAX_HISTORY = 15
 
     fun resetStats(){
@@ -48,9 +49,12 @@ object StatsManager {
 
         if(moneyHistory.size >= MAX_HISTORY) moneyHistory.removeAt(0)
         if(tokenHistory.size >= MAX_HISTORY) tokenHistory.removeAt(0)
+        if(swingsHistory.size >= MAX_HISTORY) swingsHistory.removeAt(0)
+
 
         moneyHistory.add(money.toDouble())
         tokenHistory.add(tokens.toDouble())
+        swingsHistory.add(swings.toDouble())
 
         totalUpdates++
 
