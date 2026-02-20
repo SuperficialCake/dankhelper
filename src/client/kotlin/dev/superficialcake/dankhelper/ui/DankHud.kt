@@ -62,15 +62,16 @@ object DankHud : HudRenderCallback {
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
         val graphWidth = 85
-        val labelWidth = 25
+        val labelWidth = 15
 
 
-        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + (padding * 2)
+        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + ((padding * 2) + 3)
 
         val textHeight = lines.size * 10
         var graphsSectionHeight = 0
         if (config.showMoneyGraph) graphsSectionHeight += 50
         if (config.showTokenGraph) graphsSectionHeight += 50
+        if (config.showSwingsGraph) graphsSectionHeight += 50
 
         currentHeight = textHeight + graphsSectionHeight
 
@@ -87,6 +88,10 @@ object DankHud : HudRenderCallback {
         }
         if (config.showTokenGraph) {
             drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
+            graphY += 45
+        }
+        if (config.showSwingsGraph){
+            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.swingsHistory, 0xFFFF55FF.toInt(), "SPM")
         }
     }
 
