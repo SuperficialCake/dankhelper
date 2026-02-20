@@ -22,7 +22,7 @@ object MessageHandler {
         val text = message.string
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
             inCF = true
-
+            DataHandler.prepareCFFile()
             UtilFunctions.showToast("Champion Frenzy Started", "A Champion Frenzy has started. UI updating paused")
         }
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
@@ -65,15 +65,15 @@ object MessageHandler {
 
         val currentTime = System.currentTimeMillis()
 
-        if ((currentTime - lastProcessTime < 1000) || inCF) {
+        if ((currentTime - lastProcessTime < 1000)) {
             return
         }
 
         lastProcessTime = currentTime
-        processMiningMessage(text)
+        processMiningMessage(text, inCF)
     }
 
-    private fun processMiningMessage(text: String) {
+    private fun processMiningMessage(text: String, isCF: Boolean) {
         val match = MINING_PATTERN.find(text) ?: return
         val (moneyStr, tokensStr, crates, keys, blocks, swings) = match.destructured
 
@@ -85,6 +85,12 @@ object MessageHandler {
         val keysVal = keys.replace(",", "").toLongOrNull() ?: 0L
         val blocksVal = blocks.replace(",", "").toLongOrNull() ?: 0L
 
-        StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal)
+        if (isCF){
+            DataHandler.logStats(
+                moneyVal.toString(), tokensVal, cratesVal, keysVal, blocksVal, swingsVal, 0L, 0L, true
+            )
+        } else {
+            StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal)
+        }
     }
 }
