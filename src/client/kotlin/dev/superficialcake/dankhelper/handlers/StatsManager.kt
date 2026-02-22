@@ -68,7 +68,7 @@ object StatsManager {
         val sessionMinutes = elapsedMillis / 60000.0
 
         val currentAvgSpent = if (activeMinutes > 0) {
-            sumSpentMoney.divide(BigDecimal.valueOf(activeMinutes), 2, java.math.RoundingMode.HALF_UP)
+            sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
         } else {
             BigDecimal.ZERO
         }
