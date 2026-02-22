@@ -30,7 +30,7 @@ object MessageHandler {
             inCF = false
             UtilFunctions.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended. UI updating resumed")
         }
-        if (text.contains("(Rankup)")){
+        if (text.startsWith("(Rankup)")){
             val match = RANKUP_PATTERN.find(text) ?: return
             val costStr = match.groupValues[1].replace(",", "")
             val costVal = costStr.toBigDecimalOrNull() ?: return
