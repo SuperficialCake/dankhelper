@@ -60,11 +60,15 @@ object StatsManager {
         if(tokenHistory.size >= MAX_HISTORY) tokenHistory.removeAt(0)
         if(swingsHistory.size >= MAX_HISTORY) swingsHistory.removeAt(0)
 
+        totalUpdates++
+
+        val activeMinutes = totalUpdates / 60.0
+
         val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
         val sessionMinutes = elapsedMillis / 60000.0
 
-        val currentAvgSpent = if (sessionMinutes > 0) {
-            sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
+        val currentAvgSpent = if (activeMinutes > 0) {
+            sumSpentMoney.divide(BigDecimal.valueOf(activeMinutes), 2, java.math.RoundingMode.HALF_UP)
         } else {
             BigDecimal.ZERO
         }
@@ -74,7 +78,6 @@ object StatsManager {
         swingsHistory.add(swings.toDouble())
         spentHistory.add(currentAvgSpent.toDouble())
 
-        totalUpdates++
 
         sumMoney = sumMoney.add(money)
         sumTokens += tokens
