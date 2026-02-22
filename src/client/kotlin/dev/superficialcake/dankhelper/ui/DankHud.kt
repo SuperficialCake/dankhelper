@@ -69,6 +69,7 @@ object DankHud {
         val textHeight = lines.size * 10
         var graphsSectionHeight = 0
         if (config.showMoneyGraph) graphsSectionHeight += 50
+        if (config.showSpentGraph) graphsSectionHeight += 50
         if (config.showTokenGraph) graphsSectionHeight += 50
         if (config.showSwingsGraph) graphsSectionHeight += 50
 
@@ -83,6 +84,10 @@ object DankHud {
         var graphY = y + textHeight + 5
         if (config.showMoneyGraph) {
             drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
+            graphY += 45
+        }
+        if (config.showSpentGraph){
+            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.spentHistory, 0xFFFF5555.toInt(), "-MPM")
             graphY += 45
         }
         if (config.showTokenGraph) {
