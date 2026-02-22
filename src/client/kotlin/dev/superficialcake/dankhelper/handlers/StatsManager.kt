@@ -43,6 +43,7 @@ object StatsManager {
 
         moneyHistory.clear()
         tokenHistory.clear()
+        swingsHistory.clear()
     }
 
     fun updateStats(money: BigDecimal, tokens: Long, crates: Long, keys: Long, swings: Long, blocks: Long){
