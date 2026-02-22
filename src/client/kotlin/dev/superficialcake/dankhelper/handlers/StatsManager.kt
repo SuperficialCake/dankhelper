@@ -62,13 +62,8 @@ object StatsManager {
 
         totalUpdates++
 
-        val activeMinutes = totalUpdates / 60.0
-
-        val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
-        val sessionMinutes = elapsedMillis / 60000.0
-
-        val currentAvgSpent = if (activeMinutes > 0) {
-            sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
+        val currentAvgSpent = if (totalUpdates > 0) {
+            sumSpentMoney.divide(BigDecimal.valueOf(totalUpdates.toLong()), 2, java.math.RoundingMode.HALF_UP)
         } else {
             BigDecimal.ZERO
         }
