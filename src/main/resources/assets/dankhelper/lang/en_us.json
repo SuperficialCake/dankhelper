@@ -6,6 +6,7 @@
   "text.autoconfig.dankhelper.option.hudY": "Y Position",
   "text.autoconfig.dankhelper.option.showSessionTime": "Show Session Time",
   "text.autoconfig.dankhelper.option.showMPM": "Show Money Per Minute",
+  "text.autoconfig.dankhelper.option.showASMPM": "Show Average Spent Money Per Minute",
   "text.autoconfig.dankhelper.option.showTPM": "Show Tokens Per Minute",
   "text.autoconfig.dankhelper.option.showCPM": "Show Crates Per Minute",
   "text.autoconfig.dankhelper.option.showKPM": "Show Keys Per Minute",
