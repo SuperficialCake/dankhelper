@@ -42,6 +42,7 @@ object DankHud : HudRenderCallback {
         }
 
         if (config.showMPM) lines.add("§a§lMPM: §r${StatsManager.avgMpm}")
+        if (config.showASMPM) lines.add("§c§l-MPM: §r${StatsManager.avgSpentPerMinute}")
         if (config.showTPM) lines.add("§b§lTPM: §r${StatsManager.avgTpm}")
         if (config.showCPM) lines.add("§e§lCPM: §r${StatsManager.avgCpm}")
         if (config.showKPM) lines.add("§6§lKPM: §r${StatsManager.avgKpm}")
