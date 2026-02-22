@@ -56,7 +56,7 @@ object UtilFunctions {
     }
 
     fun formatNumber(value: Double): String{
-        if (value < 1000) return String.Companion.format(Locale.US, "%.0f", value)
+        if (value < 1000) return String.format(Locale.US, "%.0f", value)
 
         val suffixes = listOf("", "K", "M", "B", "T", "Qd", "Qt", "Sx", "Sp")
         var current = value
@@ -67,7 +67,7 @@ object UtilFunctions {
             index++
         }
 
-        return String.Companion.format(Locale.US, "%.1f%s", current, suffixes[index])
+        return String.format(Locale.US, "%.1f%s", current, suffixes[index])
     }
 
     fun getFormattedTime(startTime: Long): String{
