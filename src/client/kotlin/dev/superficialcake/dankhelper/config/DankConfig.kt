@@ -24,6 +24,7 @@ class DankConfig : ConfigData {
 
     //Graph Toggles
     var showMoneyGraph: Boolean = true
+    var showSpentGraph: Boolean = false
     var showTokenGraph: Boolean = true
     var showSwingsGraph: Boolean = true
 }

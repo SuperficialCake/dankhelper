@@ -24,6 +24,7 @@ object StatsManager {
     var avgKpm = "0"
     val moneyHistory = mutableListOf<Double>()
     val tokenHistory = mutableListOf<Double>()
+    val spentHistory = mutableListOf<Double>()
     val swingsHistory = mutableListOf<Double>()
     const val MAX_HISTORY = 15
 
@@ -47,6 +48,7 @@ object StatsManager {
         sumSpentMoney = BigDecimal.ZERO
 
         moneyHistory.clear()
+        spentHistory.clear()
         tokenHistory.clear()
         swingsHistory.clear()
     }
@@ -54,13 +56,23 @@ object StatsManager {
     fun updateStats(money: BigDecimal, tokens: Long, crates: Long, keys: Long, swings: Long, blocks: Long){
 
         if(moneyHistory.size >= MAX_HISTORY) moneyHistory.removeAt(0)
+        if(spentHistory.size >= MAX_HISTORY) spentHistory.removeAt(0)
         if(tokenHistory.size >= MAX_HISTORY) tokenHistory.removeAt(0)
         if(swingsHistory.size >= MAX_HISTORY) swingsHistory.removeAt(0)
 
+        val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
+        val sessionMinutes = elapsedMillis / 60000.0
+
+        val currentAvgSpent = if (sessionMinutes > 0) {
+            sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
+        } else {
+            BigDecimal.ZERO
+        }
 
         moneyHistory.add(money.toDouble())
         tokenHistory.add(tokens.toDouble())
         swingsHistory.add(swings.toDouble())
+        spentHistory.add(currentAvgSpent.toDouble())
 
         totalUpdates++
 
@@ -90,6 +102,8 @@ object StatsManager {
             sumFortune
         )
 
+        avgSpentPerMinute = formatMoney(currentAvgSpent)
+
     }
 
     private val suffixes = listOf("", "K", "M", "B", "T", "Qd", "Qt", "Sx", "Sp")
@@ -113,14 +127,6 @@ object StatsManager {
 
     fun addMoneySpent(amount: BigDecimal){
         sumSpentMoney = sumSpentMoney.add(amount)
-
-        val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
-        val sessionMinutes = elapsedMillis / 60000
-
-        if (sessionMinutes > 0){
-            val avg = sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
-            avgSpentPerMinute = formatMoney(avg)
-        }
     }
 
     fun forceSave() {
