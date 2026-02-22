@@ -1,5 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.DankHelperClient
 import java.math.BigDecimal
 
 object StatsManager {
@@ -11,9 +12,11 @@ object StatsManager {
     private var sumSwings = 0L
     private var sumCrates = 0L
     private var sumKeys = 0L
+    private var sumSpentMoney = BigDecimal.ZERO
 
     var sumFortune = 0L
     var avgMpm = "0"
+    var avgSpentPerMinute = "0"
     var avgTpm = "0"
     var avgBpm = "0"
     var avgCpm = "0"
@@ -31,6 +34,7 @@ object StatsManager {
         avgCpm = "0"
         avgSpm = "0"
         avgKpm = "0"
+        avgSpentPerMinute = "0"
 
         totalUpdates = 0
         sumMoney = BigDecimal.ZERO
@@ -40,6 +44,7 @@ object StatsManager {
         sumCrates = 0L
         sumKeys = 0L
         sumFortune = 0L
+        sumSpentMoney = BigDecimal.ZERO
 
         moneyHistory.clear()
         tokenHistory.clear()
@@ -104,6 +109,18 @@ object StatsManager {
 
     fun addFortune(amount: Long){
         sumFortune += amount
+    }
+
+    fun addMoneySpent(amount: BigDecimal){
+        sumSpentMoney = sumSpentMoney.add(amount)
+
+        val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
+        val sessionMinutes = elapsedMillis / 60000
+
+        if (sessionMinutes > 0){
+            val avg = sumSpentMoney.divide(BigDecimal.valueOf(sessionMinutes), 2, java.math.RoundingMode.HALF_UP)
+            avgSpentPerMinute = formatMoney(avg)
+        }
     }
 
     fun forceSave() {
