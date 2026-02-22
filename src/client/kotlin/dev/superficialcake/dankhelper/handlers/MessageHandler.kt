@@ -11,6 +11,7 @@ object MessageHandler {
     private val MINING_PATTERN = """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings""".toRegex()
     private val FF_SUMMARY_PATTERN = """([\d.,]+)\s+Tokens,\s+and\s+([\d.,]+)\s+rare keys\s+from\s+([\d.,]+)\s+fish\s+with\s+([\d.,]+)\s+casts""".toRegex()
     private val FORTUNE_PATTERN = """\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
+    private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private var inCF: Boolean = false
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
@@ -28,6 +29,14 @@ object MessageHandler {
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
             inCF = false
             UtilFunctions.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended. UI updating resumed")
+        }
+        if (text.contains("(Rankup)")){
+            val match = RANKUP_PATTERN.find(text) ?: return
+            val costStr = match.groupValues[1].replace(",", "")
+            val costVal = costStr.toBigDecimalOrNull() ?: return
+
+            StatsManager.addMoneySpent(costVal)
+            return
         }
 
         when {
