@@ -12,7 +12,7 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.fabric.api.networking.v1.PacketSender
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
@@ -33,7 +33,7 @@ object DankHelperClient : ClientModInitializer {
 			GsonConfigSerializer(definition, configClass)
 		}
 
-		HudElementRegistry.addLast(Identifier.of("dankhelper", "hud")){context, tickCounter ->
+		HudRenderCallback.EVENT.register { context, tickCounter ->
 			DankHud.onHudRender(context)
 		}
 		KeybindHandler.init()
