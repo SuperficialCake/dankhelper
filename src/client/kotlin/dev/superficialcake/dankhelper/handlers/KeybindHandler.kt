@@ -14,10 +14,6 @@ import org.lwjgl.glfw.GLFW
 
 object KeybindHandler {
 
-    private val CATEGORY: KeyBinding.Category = KeyBinding.Category(
-        Identifier.of(DankHelper.MOD_ID, "general")
-    )
-
     lateinit var hideUIKey: KeyBinding
     lateinit var resetSessionKey: KeyBinding
     lateinit var moveUIKey: KeyBinding
@@ -31,8 +27,8 @@ object KeybindHandler {
             KeyBinding(
                 "key.dankhelper.resetSessionStats",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_END,
-                CATEGORY
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.dankhelper"
             )
         )
 
@@ -40,8 +36,8 @@ object KeybindHandler {
             KeyBinding(
                 "key.dankhelper.hideUI",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_H,
-                CATEGORY
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.dankhelper"
             )
         )
 
@@ -49,8 +45,8 @@ object KeybindHandler {
             KeyBinding(
                 "key.dankhelper.move_ui",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_COMMA,
-                CATEGORY
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.dankhelper"
             )
         )
 
@@ -58,8 +54,8 @@ object KeybindHandler {
             KeyBinding(
                 "key.dankhelper.open_config",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_BACKSLASH,
-                CATEGORY
+                GLFW.GLFW_KEY_UNKNOWN,
+                "category.dankhelper"
             )
         )
 
