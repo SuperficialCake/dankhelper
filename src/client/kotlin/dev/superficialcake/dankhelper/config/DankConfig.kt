@@ -27,4 +27,7 @@ class DankConfig : ConfigData {
     var showSpentGraph: Boolean = false
     var showTokenGraph: Boolean = true
     var showSwingsGraph: Boolean = true
+    
+    // Champion Frenzy
+    var championFrenzyHudLogging: Boolean = true
 }
