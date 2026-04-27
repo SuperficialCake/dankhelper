@@ -28,12 +28,12 @@ object MessageHandler {
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
             inCF = true
             if (config.championFrenzyHudLogging) DataHandler.prepareCFFile()
-            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has started. UI updating paused" else "Champion Frenzy has started"
+            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has started" else "Champion Frenzy has started. UI updating paused"
             UtilFunctions.showToast("Champion Frenzy Started", toastMsg)
         }
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
             inCF = false
-            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has ended. UI updating resumed" else "Champion Frenzy has ended"
+            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has ended" else "Champion Frenzy has ended . UI updating resumed"
             UtilFunctions.showToast("Champion Frenzy Ended", toastMsg)
         }
         if (text.startsWith("(Rankup)")){
