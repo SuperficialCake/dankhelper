@@ -2,6 +2,8 @@ package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
+import dev.superficialcake.dankhelper.config.DankConfig
+import me.shedaniel.autoconfig.AutoConfig
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
@@ -13,6 +15,8 @@ object MessageHandler {
     private val FORTUNE_PATTERN = """\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private var inCF: Boolean = false
+    private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
+    private val config get() = configHolder.config
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
 
@@ -23,12 +27,14 @@ object MessageHandler {
         val text = message.string
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
             inCF = true
-            DataHandler.prepareCFFile()
-            UtilFunctions.showToast("Champion Frenzy Started", "A Champion Frenzy has started. UI updating paused")
+            if (config.championFrenzyHudLogging) DataHandler.prepareCFFile()
+            val toastMsg = if (config.championFrenzyHudLogging) "A Champion Frenzy has started. UI updating paused" else "A Champion Frenzy has started. CF logging disabled"
+            UtilFunctions.showToast("Champion Frenzy Started", toastMsg)
         }
         if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
             inCF = false
-            UtilFunctions.showToast("Champion Frenzy Ended", "A Champion Frenzy has ended. UI updating resumed")
+            val toastMsg = if (config.championFrenzyHudLogging) "A Champion Frenzy has ended. UI updating resumed" else "A Champion Frenzy has ended. CF logging was disabled"
+            UtilFunctions.showToast("Champion Frenzy Ended", toastMsg)
         }
         if (text.startsWith("(Rankup)")){
             val match = RANKUP_PATTERN.find(text) ?: return
@@ -56,7 +62,8 @@ object MessageHandler {
                 val csvRow = "$moneyVal,${tokens.replace(",", "")},${crates.replace(",", "")}," +
                         "${keys.replace(",", "")},${blocks.replace(",", "")},${swings.replace(",", "")}"
 
-                DataHandler.saveFrenzy("champion", "Money,Tokens,Crates,Keys,Blocks,Swings", csvRow)
+                if (config.championFrenzyHudLogging)
+                    DataHandler.saveFrenzy("champion", "Money,Tokens,Crates,Keys,Blocks,Swings", csvRow)
             }
 
             text.startsWith("(FishingFrenzy) You've earned") -> {
@@ -94,12 +101,7 @@ object MessageHandler {
         val keysVal = keys.replace(",", "").toLongOrNull() ?: 0L
         val blocksVal = blocks.replace(",", "").toLongOrNull() ?: 0L
 
-        if (isCF){
-            DataHandler.logStats(
-                moneyVal.toString(), tokensVal, cratesVal, keysVal, blocksVal, swingsVal, 0L, 0L, true
-            )
-        } else {
-            StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal)
-        }
+            val shouldSendCF = isCF && config.championFrenzyHudLogging
+        StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal, shouldSendCF)
     }
 }
