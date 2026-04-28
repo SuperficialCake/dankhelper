@@ -15,6 +15,7 @@ object StatsManager {
     private var sumSpentMoney = BigDecimal.ZERO
 
     var sumFortune = 0L
+    var sumMomentum = 0L
     var avgMpm = "0"
     var avgSpentPerMinute = "0"
     var avgTpm = "0"
@@ -45,6 +46,7 @@ object StatsManager {
         sumCrates = 0L
         sumKeys = 0L
         sumFortune = 0L
+        sumMomentum = 0L
         sumSpentMoney = BigDecimal.ZERO
 
         moneyHistory.clear()
@@ -98,6 +100,7 @@ object StatsManager {
             swings,
             ScoreboardHandler.sessionBM,
             sumFortune,
+            sumMomentum,
             isCF
         )
 
@@ -124,6 +127,10 @@ object StatsManager {
         sumFortune += amount
     }
 
+    fun addMomentum(amount: Long){
+        sumMomentum += amount
+    }
+
     fun addMoneySpent(amount: BigDecimal){
         sumSpentMoney = sumSpentMoney.add(amount)
     }
@@ -139,7 +146,8 @@ object StatsManager {
             sumBlocks,
             sumSwings,
             ScoreboardHandler.sessionBM,
-            sumFortune
+            sumFortune,
+            sumMomentum
         )
     }
 
