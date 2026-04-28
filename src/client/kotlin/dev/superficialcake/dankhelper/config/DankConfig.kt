@@ -21,6 +21,7 @@ class DankConfig : ConfigData {
     var showBPM: Boolean = true
     var showBM: Boolean = true
     var showFortune: Boolean = true
+    var showMomentum: Boolean = true
 
     //Graph Toggles
     var showMoneyGraph: Boolean = true
