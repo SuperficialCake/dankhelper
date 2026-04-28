@@ -46,7 +46,7 @@ object DankHud {
         if (config.showKPM) lines.add("§6§lKPM: §r${StatsManager.avgKpm}")
 
         if ((config.showMPM || config.showTPM || config.showCPM || config.showKPM) &&
-            (config.showSPM || config.showBPM || config.showBM || config.showFortune)
+            (config.showSPM || config.showBPM || config.showBM || config.showFortune || config.showMomentum)
         ) {
             lines.add("§7=================")
         }
@@ -57,6 +57,10 @@ object DankHud {
         if (config.showFortune) {
             val formattedFortune = "%,d".format(StatsManager.sumFortune)
             lines.add("""§b§lFortune: §r${formattedFortune}""")
+        }
+        if (config.showMomentum) {
+            val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
+            lines.add("§9§lMomentum: §r${formattedMomentum}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { font.width(it).toDouble() }.toInt() else 0
