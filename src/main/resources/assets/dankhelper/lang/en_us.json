@@ -16,6 +16,7 @@
   "text.autoconfig.dankhelper.option.showBPM": "Show Blocks Per Minute",
   "text.autoconfig.dankhelper.option.showBM": "Show Blocks Mined",
   "text.autoconfig.dankhelper.option.showFortune": "Show Fortune",
+  "text.autoconfig.dankhelper.option.showMomentum": "Show Momentum",
   "text.autoconfig.dankhelper.option.showMoneyGraph": "Show Money Graph",
   "text.autoconfig.dankhelper.option.showSpentGraph": "Show Money Spent Graph",
   "text.autoconfig.dankhelper.option.showTokenGraph": "Show Token Graph",
