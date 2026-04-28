@@ -53,7 +53,7 @@ object StatsManager {
         swingsHistory.clear()
     }
 
-    fun updateStats(money: BigDecimal, tokens: Long, crates: Long, keys: Long, swings: Long, blocks: Long){
+    fun updateStats(money: BigDecimal, tokens: Long, crates: Long, keys: Long, swings: Long, blocks: Long, isCF: Boolean = false){
 
         if(moneyHistory.size >= MAX_HISTORY) moneyHistory.removeAt(0)
         if(spentHistory.size >= MAX_HISTORY) spentHistory.removeAt(0)
@@ -102,7 +102,8 @@ object StatsManager {
             blocks,
             swings,
             ScoreboardHandler.sessionBM,
-            sumFortune
+            sumFortune,
+            isCF
         )
 
         avgSpentPerMinute = formatMoney(currentAvgSpent)
