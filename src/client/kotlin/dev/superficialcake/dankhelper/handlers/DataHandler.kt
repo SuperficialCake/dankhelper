@@ -36,7 +36,7 @@ object DataHandler {
 
         currentSessionFile = File(sessionsFolder, "$date-$sessionNum.csv")
 
-        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune\n"
+        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n"
         currentSessionFile.writeText(header)
     }
 
@@ -54,7 +54,7 @@ object DataHandler {
         // 2. Fixed unresolved 'sessionNum' to 'cfNum'
         currentCFFile = File(cfFolder, "$date-$cfNum.csv")
 
-        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune\n"
+        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n"
         // 3. Fixed targeting currentSessionFile to currentCFFile
         currentCFFile.writeText(header)
     }
@@ -82,10 +82,10 @@ object DataHandler {
         }
     }
 
-    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long, isCF: Boolean = false){
+    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long, momentum: Long = 0L, isCF: Boolean = false){
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
-        val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune"
+        val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum"
 
         val targetFile = if (isCF) currentCFFile else currentSessionFile
 
