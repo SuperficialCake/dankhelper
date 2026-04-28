@@ -49,6 +49,8 @@ fun buildConfigScreen(parent: Screen?): Screen {
         .setSaveConsumer { config.showBM = it }.build())
     statsCategory.addEntry(entries.startBooleanToggle(Component.literal("Show Fortune"), config.showFortune)
         .setSaveConsumer { config.showFortune = it }.build())
+    statsCategory.addEntry(entries.startBooleanToggle(Component.literal("Show Momentum"), config.showMomentum)
+        .setSaveConsumer {config.showMomentum = it }. build())
 
     // --- Graphs ---
     val graphsCategory = eb.getOrCreateCategory(Component.literal("Graphs"))
