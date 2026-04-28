@@ -44,8 +44,6 @@ object DankHelperClient : ClientModInitializer {
 			val serverData = client.currentServerEntry
 			val ipAddress = serverData?.address?.lowercase() ?: ""
 
-			isConnected = true
-
 			UtilFunctions.resetAll()
 			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
 				if(initialSession) {
@@ -57,7 +55,7 @@ object DankHelperClient : ClientModInitializer {
 				startTime = System.currentTimeMillis()
 				isConnected = true
 			} else{
-				//isConnected = false
+				isConnected = false
 			}
 		}
 
