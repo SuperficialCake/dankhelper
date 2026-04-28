@@ -67,7 +67,9 @@ object DataHandler {
         var num = 1
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
-        while (File(folder, "${type.uppercase()}-$date-$num.csv").exists()) { num++ }
+        while (File(folder, "${type.uppercase()}-$date-summary-$num.csv").exists()) {
+            num++
+        }
 
         val file = File(folder, "${type.uppercase()}-$date-summary-$num.csv")
         val content = "Timestamp,${header}\n${timestamp},$data\n"
