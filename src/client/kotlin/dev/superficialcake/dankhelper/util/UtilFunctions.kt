@@ -1,12 +1,14 @@
 package dev.superficialcake.dankhelper.util
 
+import com.mojang.authlib.minecraft.client.MinecraftClient
 import dev.superficialcake.dankhelper.DankHelperClient
 import dev.superficialcake.dankhelper.handlers.DataHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.toast.SystemToast
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.components.toasts.SystemToast
+import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId.PERIODIC_NOTIFICATION
+import net.minecraft.network.chat.Component
 import java.math.BigDecimal
 import java.util.Locale
 
@@ -24,11 +26,11 @@ object UtilFunctions {
     }
 
     fun showToast(title: String, description: String){
-        MinecraftClient.getInstance().toastManager.add(
+        Minecraft.getInstance().toastManager.addToast(
             SystemToast(
-                SystemToast.Type.PERIODIC_NOTIFICATION,
-                Text.literal(title),
-                Text.literal(description)
+                PERIODIC_NOTIFICATION,
+                Component.literal(title),
+                Component.literal(description)
             )
         )
     }
