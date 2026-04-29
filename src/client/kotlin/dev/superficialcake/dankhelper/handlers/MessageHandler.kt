@@ -13,6 +13,7 @@ object MessageHandler {
     private val MINING_PATTERN = """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings""".toRegex()
     private val FF_SUMMARY_PATTERN = """([\d.,]+)\s+Tokens,\s+and\s+([\d.,]+)\s+rare keys\s+from\s+([\d.,]+)\s+fish\s+with\s+([\d.,]+)\s+casts""".toRegex()
     private val FORTUNE_PATTERN = """\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
+    private val MOMENTUM_PATTERN = """\((.*)\) Increased Momentum: \+(\d+)""".toRegex()
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private var inCF: Boolean = false
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
@@ -52,6 +53,14 @@ object MessageHandler {
 
                 StatsManager.addFortune(amount.toLong())
                 logger.info("Fortune increased to ${StatsManager.sumFortune}")
+            }
+
+            text.contains("Increased Momentum") ->{
+                val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
+                val (source, amount) = matchMomentum.destructured
+
+                StatsManager.addMomentum(amount.toLong())
+                logger.info("Momentum increased to ${StatsManager.sumMomentum}")
             }
 
             text.startsWith("(ChampionFrenzy) You've earned") -> {
