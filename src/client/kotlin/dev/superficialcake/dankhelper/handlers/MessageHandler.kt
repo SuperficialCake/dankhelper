@@ -4,7 +4,7 @@ import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import dev.superficialcake.dankhelper.config.DankConfig
 import me.shedaniel.autoconfig.AutoConfig
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 import org.slf4j.LoggerFactory
 
 object MessageHandler {
@@ -22,7 +22,7 @@ object MessageHandler {
 
 
 
-    fun onGameMessage(message: Text, overlay: Boolean) {
+    fun onGameMessage(message: Component, overlay: Boolean) {
 
         val text = message.string
         if (text.startsWith("Personal Champion Frenzy Event has been Activated")){

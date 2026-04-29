@@ -1,8 +1,8 @@
 package dev.superficialcake.dankhelper.handlers
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.minecraft.client.MinecraftClient
-import net.minecraft.util.Formatting
+import net.minecraft.ChatFormatting
+import net.minecraft.client.Minecraft
 import org.slf4j.LoggerFactory
 
 object ScoreboardHandler{
@@ -28,11 +28,11 @@ object ScoreboardHandler{
         })
     }
 
-    private fun scanScoreboard(client: MinecraftClient) {
-        val scoreboard = client.world?.scoreboard ?: return
+    private fun scanScoreboard(client: Minecraft) {
+        val scoreboard = client.level?.scoreboard ?: return
 
-        for (team in scoreboard.teams) {
-            val fullLine = Formatting.strip(team.prefix.string + team.suffix.string) ?: ""
+        for (team in scoreboard.playerTeams) {
+            val fullLine = ChatFormatting.stripFormatting(team.playerPrefix.string + team.playerSuffix.string) ?: ""
 
             if (fullLine.contains("DBM", ignoreCase = true)) {
                 val match = Regex("""[\d,]+""").find(fullLine)

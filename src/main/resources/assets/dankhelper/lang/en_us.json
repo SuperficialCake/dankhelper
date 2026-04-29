@@ -1,7 +1,9 @@
 {
-  "key.categories.general": "Dank Helper",
+  "key.category.dankhelper.general": "Dank Helper",
   "key.dankhelper.hideUI": "Hide UI",
   "key.dankhelper.resetSessionStats": "Reset Session Stats",
+  "key.dankhelper.move_ui": "Reposition The UI",
+  "key.dankhelper.open_config": "Open DankHelper Config",
   "text.autoconfig.dankhelper.option.hudX": "X Position",
   "text.autoconfig.dankhelper.option.hudY": "Y Position",
   "text.autoconfig.dankhelper.option.showSessionTime": "Show Session Time",
@@ -17,9 +19,9 @@
   "text.autoconfig.dankhelper.option.showMoneyGraph": "Show Money Graph",
   "text.autoconfig.dankhelper.option.showSpentGraph": "Show Money Spent Graph",
   "text.autoconfig.dankhelper.option.showTokenGraph": "Show Token Graph",
-  "text.autoconfig.dankhelper.title": "Dank Helper Config",
   "text.autoconfig.dankhelper.option.showSwingsGraph": "Show Swings Graph",
   "text.autoconfig.dankhelper.option.championFrenzyHudLogging": "Enable HUD Logging During Champion Frenzy",
   "text.ui.dankhelper.move_hud": "Move the HUD by dragging the green square. Save with ESC",
-  "text.hud.dankhelper.session_time": "Session Time"
+  "text.hud.dankhelper.session_time": "Session Time",
+  "title.dankhelper.config": "DankHelper Config"
 }

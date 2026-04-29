@@ -2,80 +2,79 @@ package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.config.DankConfig
 import me.shedaniel.autoconfig.AutoConfig
-import net.minecraft.client.gui.Click
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.text.Text
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
+import net.minecraft.client.input.MouseButtonEvent
 
-class EditHud : Screen(Text.literal("Edit HUD Position")) {
+class EditHud : Screen(Component.literal("Edit HUD Position")) {
 
     private var dragging = false
     private var dragOffsetX = 0.0
     private var dragOffsetY = 0.0
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
 
-    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(context, mouseX, mouseY, delta)
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
 
         val config = configHolder.config
         val x = config.hudX
         val y = config.hudY
-
         val w = DankHud.currentWidth
         val h = DankHud.currentHeight
 
-        context.fill(x - 4, y - 4, x + w + 4, y + h, 0x5500FF00)
+        graphics.fill(x - 4, y - 4, x + w + 4, y + h, 0x5500FF00)
 
-        context.drawCenteredTextWithShadow(
-            textRenderer,
-            Text.translatable("text.ui.dankhelper.move_hud"),
+        graphics.centeredText(
+            minecraft.font,
+            Component.translatable("text.ui.dankhelper.move_hud"),
             width / 2,
             20,
-            0xFFFFFF
+            0xFFFFFFFF.toInt()
         )
     }
 
-    override fun mouseClicked(click: Click, doubled: Boolean): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         val config = configHolder.config
         val x = config.hudX
         val y = config.hudY
         val w = DankHud.currentWidth
         val h = DankHud.currentHeight
 
-        val mouseX = click.x()
-        val mouseY = click.y()
-        val button = click.button()
-
-        // Check if the click is within the HUD bounds (+ padding)
-        if (button == 0 && mouseX >= (x - 4) && mouseX <= (x + w + 4) && mouseY >= (y - 4) && mouseY <= (y + h)) {
+        if (event.button() == 0 && event.x >= (x - 4) && event.x <= (x + w + 4) && event.y >= (y - 4) && event.y <= (y + h)) {
             dragging = true
-            dragOffsetX = mouseX - x
-            dragOffsetY = mouseY - y
-            return true // Tell Minecraft we are handling this click
-        }
-        return super.mouseClicked(click, doubled)
-    }
-
-    override fun mouseDragged(click: Click, deltaX: Double, deltaY: Double): Boolean {
-        if (dragging) {
-            val config = configHolder.config
-            config.hudX = (click.x() - dragOffsetX).toInt()
-            config.hudY = (click.y() - dragOffsetY).toInt()
+            dragOffsetX = event.x - x
+            dragOffsetY = event.y - y
             return true
         }
-        return super.mouseDragged(click, deltaX, deltaY)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseReleased(click: Click): Boolean {
-        if (dragging && click.button() == 0) {
+
+    override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
+        if (dragging) {
+            val config = configHolder.config
+            val w = DankHud.currentWidth
+            val h = DankHud.currentHeight
+
+            config.hudX = (event.x - dragOffsetX).toInt().coerceIn(0, width - w)
+            config.hudY = (event.y - dragOffsetY).toInt().coerceIn(0, height - h)
+            return true
+        }
+        return super.mouseDragged(event, dx, dy)
+    }
+
+
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
+        if (dragging && event.button() == 0) {
             dragging = false
             configHolder.save()
             return true
         }
-        return super.mouseReleased(click)
+        return super.mouseReleased(event)
     }
 
-    override fun shouldPause(): Boolean {
+    override fun isPauseScreen(): Boolean {
         return false
     }
 }

@@ -7,25 +7,25 @@ import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import me.shedaniel.autoconfig.AutoConfig
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.network.chat.Component
 
 object DankHud {
 
     var currentHeight = 0
     var currentWidth = 0
-    val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
+    val translatedSessionTime = Component.translatable("text.hud.dankhelper.session_time").string
 
-    fun onHudRender(drawContext: DrawContext) {
+    fun onHudRender(drawContext: GuiGraphicsExtractor) {
 
-        val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
+        val client = Minecraft.getInstance()
+        if (client.options.hideGui || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
 
         val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
 
-        val textRenderer = client.textRenderer
+        val font = client.font
         val x = config.hudX
         val y = config.hudY
         val padding = 6
@@ -59,12 +59,12 @@ object DankHud {
             lines.add("""§b§lFortune: §r${formattedFortune}""")
         }
 
-        val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
+        val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { font.width(it).toDouble() }.toInt() else 0
         val graphWidth = 85
         val labelWidth = 25
 
 
-        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + ((padding * 2))
+        currentWidth = maxOf(maxTextWidth, graphWidth + labelWidth) + (padding * 2)
 
         val textHeight = lines.size * 10
         var graphsSectionHeight = 0
@@ -78,34 +78,34 @@ object DankHud {
         drawContext.fill(x - padding, y - padding, x + currentWidth, y + currentHeight, 0x90000000.toInt())
 
         lines.forEachIndexed { i, line ->
-            drawContext.drawText(textRenderer, Text.literal(line), x, y + (i * 10), 0xFFFFFFFF.toInt(), true)
+            drawContext.text(font, line, x, y + (i * 10), 0xFFFFFFFF.toInt(), true)
         }
 
         var graphY = y + textHeight + 5
         if (config.showMoneyGraph) {
-            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
+            drawGraph(drawContext, font, x, graphY, graphWidth, 40, StatsManager.moneyHistory, 0xFF55FF55.toInt(), "MPM")
             graphY += 45
         }
         if (config.showSpentGraph){
-            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.spentHistory, 0xFFFF5555.toInt(), "-MPM")
+            drawGraph(drawContext, font, x, graphY, graphWidth, 40, StatsManager.spentHistory, 0xFFFF5555.toInt(), "-MPM")
             graphY += 45
         }
         if (config.showTokenGraph) {
-            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
+            drawGraph(drawContext, font, x, graphY, graphWidth, 40, StatsManager.tokenHistory, 0xFF55FFFF.toInt(), "TPM")
             graphY += 45
         }
         if (config.showSwingsGraph){
-            drawGraph(drawContext, textRenderer, x, graphY, graphWidth, 40, StatsManager.swingsHistory, 0xFFFF55FF.toInt(), "SPM")
+            drawGraph(drawContext, font, x, graphY, graphWidth, 40, StatsManager.swingsHistory, 0xFFFF55FF.toInt(), "SPM")
         }
     }
 
-    private fun drawGraph(context: DrawContext, textRenderer: TextRenderer, x: Int, y: Int, width: Int, height: Int, data: List<Double>, color: Int, label: String) {
+    private fun drawGraph(context: GuiGraphicsExtractor, font: Font, x: Int, y: Int, width: Int, height: Int, data: List<Double>, color: Int, label: String) {
         context.fill(x, y, x + width, y + height, 0x50000000)
 
         val historySnapshot = data.toList()
 
         if (historySnapshot.size < 2) {
-            context.drawTextWithShadow(textRenderer, label, x + width + 4, y + (height / 2) - 4, color)
+            context.text(font, label, x + width + 4, y + (height / 2) - 4, color)
             return
         }
 
@@ -127,11 +127,11 @@ object DankHud {
         val maxStr = UtilFunctions.formatNumber(max)
         val minStr = UtilFunctions.formatNumber(min)
 
-        context.drawTextWithShadow(textRenderer, maxStr, x + width + 4, y, color)
-        context.drawTextWithShadow(textRenderer, minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
+        context.text(font, maxStr, x + width + 4, y, color)
+        context.text(font, minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
     }
 
-    private fun drawConnection(context: DrawContext, x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
+    private fun drawConnection(context: GuiGraphicsExtractor, x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
         if (y1 == y2){
             context.fill(x1, y1, x2, y1 + 1, color)
             return
