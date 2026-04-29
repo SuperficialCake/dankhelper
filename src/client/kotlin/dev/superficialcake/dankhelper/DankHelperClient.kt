@@ -13,11 +13,14 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.fabric.api.networking.v1.PacketSender
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayNetworkHandler
-import net.minecraft.util.Identifier
+import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.ClientPacketListener
+import net.minecraft.resources.Identifier
 import org.slf4j.LoggerFactory
+import kotlin.jvm.java
+
 
 object DankHelperClient : ClientModInitializer {
 
@@ -33,16 +36,19 @@ object DankHelperClient : ClientModInitializer {
 			GsonConfigSerializer(definition, configClass)
 		}
 
-		HudElementRegistry.addLast(Identifier.of("dankhelper", "hud")){context, tickCounter ->
+		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("dankhelper", "hud")) { context, tickCounter ->
 			DankHud.onHudRender(context)
 		}
+
 		KeybindHandler.init()
 		ScoreboardHandler.init()
 		ClientReceiveMessageEvents.GAME.register(MessageHandler::onGameMessage)
 
-		ClientPlayConnectionEvents.JOIN.register{ handler: ClientPlayNetworkHandler, sender: PacketSender, client: MinecraftClient ->
-			val serverData = client.currentServerEntry
-			val ipAddress = serverData?.address?.lowercase() ?: ""
+		ClientPlayConnectionEvents.JOIN.register{ handler: ClientPacketListener, sender: PacketSender, client: Minecraft ->
+			val serverData = client.currentServer
+			val ipAddress = serverData?.ip?.lowercase() ?: ""
+
+			isConnected = true
 
 			UtilFunctions.resetAll()
 			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
@@ -55,7 +61,7 @@ object DankHelperClient : ClientModInitializer {
 				startTime = System.currentTimeMillis()
 				isConnected = true
 			} else{
-				isConnected = false
+				//isConnected = false
 			}
 		}
 

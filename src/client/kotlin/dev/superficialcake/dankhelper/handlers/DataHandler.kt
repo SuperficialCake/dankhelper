@@ -1,7 +1,7 @@
 package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.util.UtilFunctions
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 
 object DataHandler {
 
-    private val gameDir: File = MinecraftClient.getInstance().runDirectory
+    private val gameDir: File = Minecraft.getInstance().gameDirectory
 
     private val rootFolder: File = File(gameDir, "dankhelper")
     private val sessionsFolder: File = File(rootFolder, "sessions")
