@@ -37,15 +37,15 @@ there is no way a player can mess with your fortune count or your summaries.
 
 ## Installation
 
-Install Fabric loader for version 1.20.1
+Install Fabric loader for version 26.1
 
-Install [FabricAPI](https://modrinth.com/mod/fabric-api/versions?g=1.21.11)
+Install [FabricAPI](https://modrinth.com/mod/fabric-api/versions?g=26.1)
 
 Install [Fabric Lang Kotlin](https://modrinth.com/mod/fabric-language-kotlin)
 
-Install [Cloth Config](https://modrinth.com/mod/cloth-config/versions?g=1.21.11&l=fabric)
+Install [Cloth Config](https://modrinth.com/mod/cloth-config/versions?g=26.1&l=fabric)
 
-Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=1.21.11)
+Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=26.1)
 
 Download the latest jar from the [Releases Page](https://github.com/SuperficialCake/dankhelper/releases), or compile from source.
 
