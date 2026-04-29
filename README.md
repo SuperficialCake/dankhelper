@@ -37,7 +37,7 @@ there is no way a player can mess with your fortune count or your summaries.
 
 ## Installation
 
-Install Fabric loader for version 1.20.1
+Install Fabric loader for version 1.21.11
 
 Install [FabricAPI](https://modrinth.com/mod/fabric-api/versions?g=1.21.11)
 
