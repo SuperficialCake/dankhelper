@@ -23,7 +23,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
         val w = DankHud.currentWidth
         val h = DankHud.currentHeight
 
-        context.fill(x - 4, y - 4, x + w + 4, y + h, 0x5500FF00)
+        context.fill(x - 6, y - 6, x + w + 2, y + h + 2, 0x5500FF00)
 
         context.drawCenteredTextWithShadow(
             textRenderer,
@@ -62,8 +62,9 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
             val maxX = maxOf(0, this.width - w)
             val maxY = maxOf(0, this.height - h)
 
-            config.hudX = newX.coerceIn(0, maxX)
-            config.hudY = newY.coerceIn(0, maxY)
+            //Accounts for padding, background can no longer be cut off by edge of screen
+            config.hudX = newX.coerceIn(6, maxX)
+            config.hudY = newY.coerceIn(6, maxY)
             return true
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
