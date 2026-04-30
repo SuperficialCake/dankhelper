@@ -16,9 +16,13 @@ object DankHud {
 
     var currentHeight = 0
     var currentWidth = 0
-    val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
+
 
     fun onHudRender(drawContext: DrawContext) {
+
+        val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
+        val translatedFortune = Text.translatable("text.hud.dankhelper.fortune").string
+        val translatedMomentum = Text.translatable("text.hud.dankhelper.momentum").string
 
         val client = MinecraftClient.getInstance()
         if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
@@ -56,11 +60,11 @@ object DankHud {
         if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
         if (config.showFortune) {
             val formattedFortune = "%,d".format(StatsManager.sumFortune)
-            lines.add("""§b§lFortune: §r${formattedFortune}""")
+            lines.add("""${translatedFortune} §r${formattedFortune}""")
         }
         if (config.showMomentum) {
             val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
-            lines.add("§9§lMomentum: §r${formattedMomentum}")
+            lines.add("${translatedMomentum} §r${formattedMomentum}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
