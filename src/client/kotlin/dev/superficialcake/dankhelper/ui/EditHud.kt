@@ -24,7 +24,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
         val w = DankHud.currentWidth
         val h = DankHud.currentHeight
 
-        context.fill(x - 4, y - 4, x + w + 4, y + h, 0x5500FF00)
+        context.fill(x - 6, y - 6, x + w + 2, y + h + 2, 0x5500FF00)
 
         context.drawCenteredTextWithShadow(
             textRenderer,
@@ -51,7 +51,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
             dragging = true
             dragOffsetX = mouseX - x
             dragOffsetY = mouseY - y
-            return true // Tell Minecraft we are handling this click
+            return true
         }
         return super.mouseClicked(click, doubled)
     }
@@ -59,8 +59,19 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
     override fun mouseDragged(click: Click, deltaX: Double, deltaY: Double): Boolean {
         if (dragging) {
             val config = configHolder.config
-            config.hudX = (click.x() - dragOffsetX).toInt()
-            config.hudY = (click.y() - dragOffsetY).toInt()
+            val w = DankHud.currentWidth
+            val h = DankHud.currentHeight
+
+            val newX = (click.x() - dragOffsetX).toInt()
+            val newY = (click.y() - dragOffsetY).toInt()
+
+            val maxX = maxOf(0, this.width - w)
+            val maxY = maxOf(0, this.height - h)
+
+            //Accounts for padding, background can no longer be cut off by edge of screen
+            config.hudX = newX.coerceIn(6, maxX)
+            config.hudY = newY.coerceIn(6, maxY)
+
             return true
         }
         return super.mouseDragged(click, deltaX, deltaY)
