@@ -19,7 +19,6 @@ object DankHud : HudRenderCallback {
     var currentHeight = 0
     var currentWidth = 0
 
-
     override fun onHudRender(drawContext: DrawContext, tickCounter: RenderTickCounter) {
 
         val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
