@@ -60,11 +60,11 @@ object DankHud {
         if (config.showBM) lines.add("§5§lBM: §r${ScoreboardHandler.formattedSessionBM}")
         if (config.showFortune) {
             val formattedFortune = "%,d".format(StatsManager.sumFortune)
-            lines.add("""${translatedFortune} §r${formattedFortune}""")
+            lines.add("""$translatedFortune §r${formattedFortune}""")
         }
         if (config.showMomentum) {
             val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
-            lines.add("${translatedMomentum} §r${formattedMomentum}")
+            lines.add("$translatedMomentum §r${formattedMomentum}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
