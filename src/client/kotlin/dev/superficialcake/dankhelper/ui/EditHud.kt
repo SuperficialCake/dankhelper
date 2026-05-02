@@ -57,8 +57,8 @@ class EditHud : Screen(Component.literal("Edit HUD Position")) {
             val w = DankHud.currentWidth
             val h = DankHud.currentHeight
 
-            config.hudX = (event.x - dragOffsetX).toInt().coerceIn(0, width - w)
-            config.hudY = (event.y - dragOffsetY).toInt().coerceIn(0, height - h)
+            config.hudX = (event.x - dragOffsetX).toInt().coerceIn(6, width - w)
+            config.hudY = (event.y - dragOffsetY).toInt().coerceIn(6, height - h)
             return true
         }
         return super.mouseDragged(event, dx, dy)
