@@ -64,7 +64,7 @@ object StatsManager {
 
         totalUpdates++
 
-        val activeMinutes = totalUpdates / 60.0
+        val activeMinutes = totalUpdates.toDouble()
 
         val elapsedMillis = System.currentTimeMillis() - DankHelperClient.startTime
         val sessionMinutes = elapsedMillis / 60000.0
