@@ -11,6 +11,7 @@ class DankConfig : ConfigData {
 
     // Toggles
     var showSessionTime: Boolean = true
+    var showSunriseTime: Boolean = true
     var showMPM: Boolean = true
     var showASMPM: Boolean = false
     var showTPM: Boolean = true
