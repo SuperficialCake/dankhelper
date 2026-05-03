@@ -44,6 +44,7 @@ object DankHud : HudRenderCallback {
             lines.add("§7=================")
         }
 
+        if (config.showSunriseTime) lines.add("§aSunrise Time: §r${ScoreboardHandler.sunriseTime}")
         if (config.showMPM) lines.add("§a§lMPM: §r${StatsManager.avgMpm}")
         if (config.showASMPM) lines.add("§c§l-MPM: §r${StatsManager.avgSpentPerMinute}")
         if (config.showTPM) lines.add("§b§lTPM: §r${StatsManager.avgTpm}")
@@ -51,7 +52,7 @@ object DankHud : HudRenderCallback {
         if (config.showKPM) lines.add("§6§lKPM: §r${StatsManager.avgKpm}")
 
         if ((config.showMPM || config.showTPM || config.showCPM || config.showKPM) &&
-            (config.showSPM || config.showBPM || config.showBM || config.showFortune || config.showMomentum)
+            (config.showSPM || config.showBPM || config.showBM || config.showFortune || config.showMomentum || config.showSunriseTime)
         ) {
             lines.add("§7=================")
         }
@@ -135,9 +136,25 @@ object DankHud : HudRenderCallback {
 
         val maxStr = UtilFunctions.formatNumber(max)
         val minStr = UtilFunctions.formatNumber(min)
+        val labelWidth = 25
 
-        context.drawTextWithShadow(textRenderer, maxStr, x + width + 4, y, color)
-        context.drawTextWithShadow(textRenderer, minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
+        fun drawScaledLabel(text: String, lx: Int, ly: Int, color: Int) {
+            val tw = textRenderer.getWidth(text)
+            if (tw > labelWidth) {
+                val scale = labelWidth.toFloat() / tw
+                val matrices = context.matrices
+                matrices.push()
+                matrices.translate(lx.toFloat(), ly.toFloat(), 0f)
+                matrices.scale(scale, scale, 1f)
+                context.drawTextWithShadow(textRenderer, text, 0, 0, color)
+                matrices.pop()
+            } else {
+                context.drawTextWithShadow(textRenderer, text, lx, ly, color)
+            }
+        }
+
+        drawScaledLabel(maxStr, x + width + 4, y, color)
+        drawScaledLabel(minStr, x + width + 4, y + height - 8, 0xFFAAAAAA.toInt())
     }
 
     private fun drawConnection(context: DrawContext, x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
