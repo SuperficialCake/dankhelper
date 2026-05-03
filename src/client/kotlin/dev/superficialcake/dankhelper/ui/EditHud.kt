@@ -59,12 +59,14 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
             val newX = (mouseX - dragOffsetX).toInt()
             val newY = (mouseY - dragOffsetY).toInt()
 
-            val maxX = maxOf(0, this.width - w)
-            val maxY = maxOf(0, this.height - h)
+            val minX = 6
+            val minY = 6
+            val maxX = maxOf(minX, this.width - w)
+            val maxY = maxOf(minY, this.height - h)
 
             //Accounts for padding, background can no longer be cut off by edge of screen
-            config.hudX = newX.coerceIn(6, maxX)
-            config.hudY = newY.coerceIn(6, maxY)
+            config.hudX = newX.coerceIn(minX, maxX)
+            config.hudY = newY.coerceIn(minY, maxY)
             return true
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
