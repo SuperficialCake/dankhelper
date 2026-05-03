@@ -3,7 +3,6 @@ package dev.superficialcake.dankhelper.handlers
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
 import dev.superficialcake.dankhelper.util.UtilFunctions
-import kotlinx.coroutines.Job
 import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding
