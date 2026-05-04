@@ -40,15 +40,18 @@ object ScoreboardHandler {
 
         var currentTitleColor = titleText.style.color?.name
         if (currentTitleColor == null) {
-            currentTitleColor = titleText.siblings.firstOrNull {
-                it.string.isNotBlank() && it.style.color != null
-            }?.style?.color?.name
+            currentTitleColor =
+                titleText.siblings
+                    .firstOrNull {
+                        it.string.isNotBlank() && it.style.color != null
+                    }?.style
+                    ?.color
+                    ?.name
         }
 
         if (prevTitleColor == null) {
             prevTitleColor = currentTitleColor
-        }
-        else if (prevTitleColor != currentTitleColor) {
+        } else if (prevTitleColor != currentTitleColor) {
             val now = LocalDateTime.now()
             val formattedTime = "0:%02d:%02d".format(now.minute % 10, now.second)
 
