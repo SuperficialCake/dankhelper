@@ -10,7 +10,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 object DataHandler {
-
     private val gameDir: File = MinecraftClient.getInstance().runDirectory
 
     private val rootFolder: File = File(gameDir, "dankhelper")
@@ -22,10 +21,11 @@ object DataHandler {
 
     private val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val timeFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
+
     private fun utcDateStr(): String = ZonedDateTime.now(ZoneOffset.UTC).format(dateFmt)
 
     fun init() {
-        if (!rootFolder.exists())     rootFolder.mkdirs()
+        if (!rootFolder.exists()) rootFolder.mkdirs()
         if (!sessionsFolder.exists()) sessionsFolder.mkdirs()
 
         prepareSessionFile()
@@ -34,7 +34,7 @@ object DataHandler {
 
     private fun registerMidnightRollover() {
         var lastUtcDate = utcDateStr()
-        var tickCount   = 0
+        var tickCount = 0
 
         ClientTickEvents.END_CLIENT_TICK.register { _ ->
             tickCount++
@@ -49,16 +49,16 @@ object DataHandler {
         }
     }
 
-    private fun prepareSessionFile(){
+    private fun prepareSessionFile() {
         val date = utcDateStr()
         var sessionNum = 1
-        while(File(sessionsFolder, "$date-$sessionNum.csv").exists()) sessionNum++
+        while (File(sessionsFolder, "$date-$sessionNum.csv").exists()) sessionNum++
 
         currentSessionFile = File(sessionsFolder, "$date-$sessionNum.csv")
         currentSessionFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n")
     }
 
-    fun prepareCFFile(){
+    fun prepareCFFile() {
         val cfFolder = File(frenzyRoot, "champion")
         if (!cfFolder.exists()) cfFolder.mkdirs()
 
@@ -70,7 +70,11 @@ object DataHandler {
         currentCFFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n")
     }
 
-    fun saveFrenzy(type: String, header: String, data: String) {
+    fun saveFrenzy(
+        type: String,
+        header: String,
+        data: String,
+    ) {
         val folder = File(frenzyRoot, type)
         if (!folder.exists()) folder.mkdirs()
 
@@ -84,18 +88,25 @@ object DataHandler {
             file.writeText("Timestamp,$header\n$timestamp,$data\n")
             UtilFunctions.showToast(
                 "Frenzy Saved",
-                "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/"
+                "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/",
             )
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     fun logStats(
-        money: String, tokens: Long, crates: Long, keys: Long,
-        blocks: Long, swings: Long, sessionBM: Long, fortune: Long,
-        momentum: Long = 0L, isCF: Boolean = false
-    ){
+        money: String,
+        tokens: Long,
+        crates: Long,
+        keys: Long,
+        blocks: Long,
+        swings: Long,
+        sessionBM: Long,
+        fortune: Long,
+        momentum: Long = 0L,
+        isCF: Boolean = false,
+    ) {
         val timestamp = LocalTime.now().format(timeFmt)
         val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum"
         val targetFile = if (isCF) currentCFFile else currentSessionFile
