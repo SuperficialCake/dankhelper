@@ -1,6 +1,5 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.DankHelperClient
 import java.math.BigDecimal
 
 object StatsManager {
