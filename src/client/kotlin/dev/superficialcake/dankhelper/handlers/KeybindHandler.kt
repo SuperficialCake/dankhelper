@@ -11,7 +11,6 @@ import net.minecraft.client.util.InputUtil
 import org.lwjgl.glfw.GLFW
 
 object KeybindHandler {
-
     private const val CATEGORY = "key.categories.dankhelper"
 
     lateinit var hideUIKey: KeyBinding
@@ -22,60 +21,65 @@ object KeybindHandler {
     var showUI: Boolean = true
 
     fun init() {
-
-        resetSessionKey = registerKeyBinding(
-            KeyBinding(
-                "key.dankhelper.resetSessionStats",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_END,
-                CATEGORY
+        resetSessionKey =
+            registerKeyBinding(
+                KeyBinding(
+                    "key.dankhelper.resetSessionStats",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_END,
+                    CATEGORY,
+                ),
             )
-        )
 
-        hideUIKey = registerKeyBinding(
-            KeyBinding(
-                "key.dankhelper.hideUI",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_H,
-                CATEGORY
+        hideUIKey =
+            registerKeyBinding(
+                KeyBinding(
+                    "key.dankhelper.hideUI",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_H,
+                    CATEGORY,
+                ),
             )
-        )
 
-        moveUIKey = registerKeyBinding(
-            KeyBinding(
-                "key.dankhelper.move_ui",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_COMMA,
-                CATEGORY
+        moveUIKey =
+            registerKeyBinding(
+                KeyBinding(
+                    "key.dankhelper.moveUi",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_COMMA,
+                    CATEGORY,
+                ),
             )
-        )
 
-        clothConfigKey = registerKeyBinding(
-            KeyBinding(
-                "key.dankhelper.open_config",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_BACKSLASH,
-                CATEGORY
+        clothConfigKey =
+            registerKeyBinding(
+                KeyBinding(
+                    "key.dankhelper.openConfig",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_BACKSLASH,
+                    CATEGORY,
+                ),
             )
-        )
 
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
-            while (hideUIKey.wasPressed()) {
-                showUI = !showUI
-            }
-            while (resetSessionKey.wasPressed()) {
-                UtilFunctions.resetAll()
-            }
-            while (moveUIKey.wasPressed()) {
-                if (client.currentScreen == null) {
-                    client.setScreen(EditHud())
+        ClientTickEvents.END_CLIENT_TICK.register(
+            ClientTickEvents.EndTick { client ->
+                while (hideUIKey.wasPressed()) {
+                    showUI = !showUI
                 }
-            }
-            while (clothConfigKey.wasPressed()) {
-                client.setScreen(
-                    AutoConfig.getConfigScreen(DankConfig::class.java, client.currentScreen).get()
-                )
-            }
-        })
+                while (resetSessionKey.wasPressed()) {
+                    UtilFunctions.resetAll()
+                }
+                while (moveUIKey.wasPressed()) {
+                    if (client.currentScreen == null) {
+                        client.setScreen(EditHud())
+                    }
+                }
+                while (clothConfigKey.wasPressed()) {
+                    client.setScreen(
+                        AutoConfig.getConfigScreen(DankConfig::class.java, client.currentScreen).get(),
+                    )
+                }
+            },
+        )
     }
 }
