@@ -5,12 +5,11 @@ import me.shedaniel.autoconfig.annotation.Config
 
 @Config(name = "dankhelper")
 class DankConfig : ConfigData {
-
-    //Positioning
+    // Positioning
     var hudX: Int = 10
     var hudY: Int = 60
 
-    //Toggles
+    // Toggles
     var showSessionTime: Boolean = true
     var showSunriseTime: Boolean = true
     var showMPM: Boolean = true
@@ -24,12 +23,12 @@ class DankConfig : ConfigData {
     var showFortune: Boolean = true
     var showMomentum: Boolean = true
 
-    //Graph Toggles
+    // Graph Toggles
     var showMoneyGraph: Boolean = true
     var showSpentGraph: Boolean = false
     var showTokenGraph: Boolean = true
     var showSwingsGraph: Boolean = true
-    
+
     // Champion Frenzy
     var championFrenzyHudLogging: Boolean = true
 }
