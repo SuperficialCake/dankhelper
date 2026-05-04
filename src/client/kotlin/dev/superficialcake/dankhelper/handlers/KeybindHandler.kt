@@ -49,7 +49,7 @@ object KeybindHandler {
         moveUIKey =
             registerKeyBinding(
                 KeyBinding(
-                    "key.dankhelper.move_ui",
+                    "key.dankhelper.moveUi",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_COMMA,
                     CATEGORY,
@@ -59,7 +59,7 @@ object KeybindHandler {
         clothConfigKey =
             registerKeyBinding(
                 KeyBinding(
-                    "key.dankhelper.open_config",
+                    "key.dankhelper.openConfig",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_BACKSLASH,
                     CATEGORY,
