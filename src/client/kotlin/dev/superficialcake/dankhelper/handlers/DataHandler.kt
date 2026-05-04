@@ -8,7 +8,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object DataHandler {
-
     private val gameDir: File = Minecraft.getInstance().gameDirectory
 
     private val rootFolder: File = File(gameDir, "dankhelper")
@@ -18,19 +17,19 @@ object DataHandler {
     private lateinit var currentSessionFile: File
     private lateinit var currentCFFile: File
 
-    fun init(){
-        if(!rootFolder.exists())rootFolder.mkdirs()
-        if(!sessionsFolder.exists())sessionsFolder.mkdirs()
+    fun init() {
+        if (!rootFolder.exists()) rootFolder.mkdirs()
+        if (!sessionsFolder.exists()) sessionsFolder.mkdirs()
 
         prepareSessionFile()
     }
 
-    private fun prepareSessionFile(){
+    private fun prepareSessionFile() {
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
         var sessionNum = 1
 
-        while(File(sessionsFolder, "$date-$sessionNum.csv").exists()){
+        while (File(sessionsFolder, "$date-$sessionNum.csv").exists()) {
             sessionNum++
         }
 
@@ -40,14 +39,14 @@ object DataHandler {
         currentSessionFile.writeText(header)
     }
 
-    fun prepareCFFile(){
+    fun prepareCFFile() {
         val cfFolder = File(frenzyRoot, "champion")
         if (!cfFolder.exists()) cfFolder.mkdirs() // Ensure the folder exists
 
         val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         var cfNum = 1
 
-        while(File(cfFolder, "$date-$cfNum.csv").exists()){
+        while (File(cfFolder, "$date-$cfNum.csv").exists()) {
             cfNum++
         }
 
@@ -59,7 +58,11 @@ object DataHandler {
         currentCFFile.writeText(header)
     }
 
-    fun saveFrenzy(type: String, header: String, data: String) {
+    fun saveFrenzy(
+        type: String,
+        header: String,
+        data: String,
+    ) {
         val folder = File(frenzyRoot, type)
         if (!folder.exists()) folder.mkdirs()
 
@@ -72,17 +75,28 @@ object DataHandler {
         }
 
         val file = File(folder, "${type.uppercase()}-$date-summary-$num.csv")
-        val content = "Timestamp,${header}\n${timestamp},$data\n"
+        val content = "Timestamp,${header}\n$timestamp,$data\n"
 
         try {
             file.writeText(content)
             UtilFunctions.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/")
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun logStats(money: String, tokens: Long, crates: Long, keys: Long, blocks: Long, swings: Long, sessionBM: Long, fortune: Long, momentum: Long = 0L, isCF: Boolean = false){
+    fun logStats(
+        money: String,
+        tokens: Long,
+        crates: Long,
+        keys: Long,
+        blocks: Long,
+        swings: Long,
+        sessionBM: Long,
+        fortune: Long,
+        momentum: Long = 0L,
+        isCF: Boolean = false,
+    ) {
         val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
         val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum"
@@ -91,7 +105,7 @@ object DataHandler {
 
         try {
             targetFile.appendText("$row\n")
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

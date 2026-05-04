@@ -21,51 +21,48 @@ import net.minecraft.resources.Identifier
 import org.slf4j.LoggerFactory
 import kotlin.jvm.java
 
-
 object DankHelperClient : ClientModInitializer {
+    private val logger = LoggerFactory.getLogger("dankhelper")
 
-	private val logger = LoggerFactory.getLogger("dankhelper")
+    var isConnected: Boolean = false
+    var startTime: Long = 0L
+    var initialSession: Boolean = true
 
-	var isConnected: Boolean = false
-	var startTime: Long = 0L
-	var initialSession: Boolean = true
+    override fun onInitializeClient() {
+        AutoConfig.register(DankConfig::class.java) { definition, configClass ->
+            GsonConfigSerializer(definition, configClass)
+        }
 
-	override fun onInitializeClient() {
+        HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("dankhelper", "hud")) { context, tickCounter ->
+            DankHud.onHudRender(context)
+        }
 
-		AutoConfig.register(DankConfig::class.java) { definition, configClass ->
-			GsonConfigSerializer(definition, configClass)
-		}
+        KeybindHandler.init()
+        ScoreboardHandler.init()
+        ClientReceiveMessageEvents.GAME.register(MessageHandler::onGameMessage)
 
-		HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("dankhelper", "hud")) { context, tickCounter ->
-			DankHud.onHudRender(context)
-		}
+        ClientPlayConnectionEvents.JOIN.register { handler: ClientPacketListener, sender: PacketSender, client: Minecraft ->
+            val serverData = client.currentServer
+            val ipAddress = serverData?.ip?.lowercase() ?: ""
 
-		KeybindHandler.init()
-		ScoreboardHandler.init()
-		ClientReceiveMessageEvents.GAME.register(MessageHandler::onGameMessage)
+            UtilFunctions.resetAll()
+            if (ipAddress == "dankprison.com" || ipAddress.contains("dankprison")) {
+                if (initialSession) {
+                    UtilFunctions.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")
+                    initialSession = false
+                }
 
-		ClientPlayConnectionEvents.JOIN.register{ handler: ClientPacketListener, sender: PacketSender, client: Minecraft ->
-			val serverData = client.currentServer
-			val ipAddress = serverData?.ip?.lowercase() ?: ""
+                logger.info("Connected to DankPrison")
+                startTime = System.currentTimeMillis()
+                isConnected = true
+            } else {
+                isConnected = false
+            }
+        }
 
-			UtilFunctions.resetAll()
-			if(ipAddress == "dankprison.com" || ipAddress.contains("dankprison")){
-				if(initialSession) {
-					UtilFunctions.showToast("Started Session", "Started logging Mining Summaries. New CSV Generated")
-					initialSession = false
-				}
-
-				logger.info("Connected to DankPrison")
-				startTime = System.currentTimeMillis()
-				isConnected = true
-			} else{
-				isConnected = false
-			}
-		}
-
-		ClientPlayConnectionEvents.DISCONNECT.register{ _, _ ->
-			StatsManager.forceSave()
-			isConnected = false
-		}
-	}
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+            StatsManager.forceSave()
+            isConnected = false
+        }
+    }
 }
