@@ -27,5 +27,6 @@
   "text.ui.dankhelper.move_hud": "Move the HUD by dragging the green square. Save with ESC",
   "text.hud.dankhelper.session_time": "Session Time",
   "text.hud.dankhelper.fortune": "§b§lFortune:",
-  "text.hud.dankhelper.momentum": "§9§lMomentum:"
+  "text.hud.dankhelper.momentum": "§9§lMomentum:",
+  "text.hud.dankhelper.artifacts": "§e§lArtifacts:"
 }
