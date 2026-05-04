@@ -5,8 +5,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Formatting
 import org.slf4j.LoggerFactory
 
-object ScoreboardHandler{
-
+object ScoreboardHandler {
     private val logger = LoggerFactory.getLogger("DankHelper-Scoreboard")
     private var tickCounter = 0
     var formattedSessionBM: String = "0"
@@ -17,15 +16,17 @@ object ScoreboardHandler{
     private var lastSeenBM: Long = -1L
     var sessionBM: Long = 0L
 
-    fun init(){
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
-            tickCounter++
+    fun init() {
+        ClientTickEvents.END_CLIENT_TICK.register(
+            ClientTickEvents.EndTick { client ->
+                tickCounter++
 
-            if(tickCounter >= SCAN_INTERVAL){
-                tickCounter = 0
-                scanScoreboard(client)
-            }
-        })
+                if (tickCounter >= SCAN_INTERVAL) {
+                    tickCounter = 0
+                    scanScoreboard(client)
+                }
+            },
+        )
     }
 
     private fun scanScoreboard(client: MinecraftClient) {
@@ -44,7 +45,7 @@ object ScoreboardHandler{
                     logger.info("Session Start BM captured: $initialBM")
                 }
 
-                if (currentTotalBM < lastSeenBM){
+                if (currentTotalBM < lastSeenBM) {
                     initialBM -= lastSeenBM
                 }
 
@@ -56,7 +57,7 @@ object ScoreboardHandler{
         }
     }
 
-    fun reset(){
+    fun reset() {
         initialBM = -1L
         lastSeenBM = -1L
         sessionBM = 0L
