@@ -15,6 +15,7 @@ object StatsManager {
 
     var sumFortune = 0L
     var sumMomentum = 0L
+    var sumArtifact = 0L
     var avgMpm = "0"
     var avgSpentPerMinute = "0"
     var avgTpm = "0"
@@ -94,7 +95,8 @@ object StatsManager {
         sumBlocks += blocks
         sumSwings += swings
 
-        avgMpm = formatMoney(sumMoney.divide(BigDecimal.valueOf(totalUpdates.toLong()), 2, java.math.RoundingMode.HALF_UP))
+        avgMpm =
+            formatMoney(sumMoney.divide(BigDecimal.valueOf(totalUpdates.toLong()), 2, java.math.RoundingMode.HALF_UP))
         avgTpm = "%,d".format(sumTokens / totalUpdates)
         avgCpm = "%,d".format(sumCrates / totalUpdates)
         avgKpm = "%,d".format(sumKeys / totalUpdates)
@@ -111,6 +113,7 @@ object StatsManager {
             ScoreboardHandler.sessionBM,
             sumFortune,
             sumMomentum,
+            sumArtifact,
             isCF,
         )
 
@@ -139,6 +142,10 @@ object StatsManager {
         sumMomentum += amount
     }
 
+    fun addArtifact(amount: Long) {
+        sumArtifact += amount
+    }
+
     fun addMoneySpent(amount: BigDecimal) {
         sumSpentMoney = sumSpentMoney.add(amount)
     }
@@ -156,6 +163,8 @@ object StatsManager {
             ScoreboardHandler.sessionBM,
             sumFortune,
             sumMomentum,
+            sumArtifact,
+            isCF = false,
         )
     }
 }

@@ -1,6 +1,7 @@
 package dev.superficialcake.dankhelper.ui
 
-import net.minecraft.client.MinecraftClient
+import com.mojang.authlib.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -289,7 +290,7 @@ object TrendsLoader {
     // Helpers
 
     private fun folder(subpath: String): File? {
-        val dir = File(MinecraftClient.getInstance().runDirectory, "dankhelper/$subpath")
+        val dir = File(Minecraft.getInstance().gameDirectory, "dankhelper/$subpath")
         return if (dir.exists()) dir else null
     }
 

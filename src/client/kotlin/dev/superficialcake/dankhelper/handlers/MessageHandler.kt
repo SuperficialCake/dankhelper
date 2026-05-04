@@ -17,6 +17,7 @@ object MessageHandler {
             .toRegex()
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
+    private val ARTIFACT_PATTERN = """^(\(.*\).*| -) ([\d]+x) (.*) (Artifact)""".toRegex()
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private var inCF: Boolean = false
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
@@ -66,6 +67,14 @@ object MessageHandler {
 
                 StatsManager.addFortune(amount.toLong())
                 logger.info("Fortune increased to ${StatsManager.sumFortune}")
+            }
+
+            text.contains("Artifact") -> {
+                val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
+                val (_, amount) = matchArtifact.destructured
+
+                StatsManager.addArtifact(amount.toLong())
+                logger.info("Found ${StatsManager.sumArtifact} this session")
             }
 
             text.contains("Increased Momentum") -> {

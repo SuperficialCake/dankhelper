@@ -1,18 +1,16 @@
 package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.util.UtilFunctions
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.Click
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
 import java.awt.Desktop
 import java.io.File
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class TrendsScreen : Screen(Text.literal("Trends")) {
+class TrendsScreen : Screen(Component.literal("Trends")) {
     private enum class Tab(
         val label: String,
     ) {
@@ -147,7 +145,7 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
     }
 
     private fun currentFolder(): File {
-        val gameDir = MinecraftClient.getInstance().runDirectory
+        val gameDir = Minecraft.getInstance().gameDirectory
         val subfolder =
             when (currentTab) {
                 Tab.SESSIONS -> "sessions"
