@@ -7,8 +7,7 @@ import net.minecraft.util.Formatting
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
-object ScoreboardHandler{
-
+object ScoreboardHandler {
     private val logger = LoggerFactory.getLogger("DankHelper-Scoreboard")
     private var tickCounter = 0
     private var prevTitleColor: String? = null
@@ -21,15 +20,17 @@ object ScoreboardHandler{
     var sessionBM: Long = 0L
     var sunriseTime: String = "--:--"
 
-    fun init(){
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickEvents.EndTick { client ->
-            tickCounter++
+    fun init() {
+        ClientTickEvents.END_CLIENT_TICK.register(
+            ClientTickEvents.EndTick { client ->
+                tickCounter++
 
-            if(tickCounter >= SCAN_INTERVAL){
-                tickCounter = 0
-                scanScoreboard(client)
-            }
-        })
+                if (tickCounter >= SCAN_INTERVAL) {
+                    tickCounter = 0
+                    scanScoreboard(client)
+                }
+            },
+        )
     }
 
     private fun scanScoreboard(client: MinecraftClient) {
@@ -39,15 +40,18 @@ object ScoreboardHandler{
 
         var currentTitleColor = titleText.style.color?.name
         if (currentTitleColor == null) {
-            currentTitleColor = titleText.siblings.firstOrNull {
-                it.string.isNotBlank() && it.style.color != null
-            }?.style?.color?.name
+            currentTitleColor =
+                titleText.siblings
+                    .firstOrNull {
+                        it.string.isNotBlank() && it.style.color != null
+                    }?.style
+                    ?.color
+                    ?.name
         }
 
         if (prevTitleColor == null) {
             prevTitleColor = currentTitleColor
-        }
-        else if (prevTitleColor != currentTitleColor) {
+        } else if (prevTitleColor != currentTitleColor) {
             val now = LocalDateTime.now()
             val formattedTime = "0:%02d:%02d".format(now.minute % 10, now.second)
 
@@ -70,7 +74,7 @@ object ScoreboardHandler{
                     logger.info("Session Start BM captured: $initialBM")
                 }
 
-                if (currentTotalBM < lastSeenBM){
+                if (currentTotalBM < lastSeenBM) {
                     initialBM = currentTotalBM
                 }
 
@@ -82,7 +86,7 @@ object ScoreboardHandler{
         }
     }
 
-    fun reset(){
+    fun reset() {
         initialBM = -1L
         lastSeenBM = -1L
         sessionBM = 0L

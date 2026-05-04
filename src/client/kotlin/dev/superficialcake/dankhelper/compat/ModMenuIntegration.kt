@@ -6,11 +6,8 @@ import dev.superficialcake.dankhelper.config.DankConfig
 import me.shedaniel.autoconfig.AutoConfig
 
 class ModMenuIntegration : ModMenuApi {
-
-    override fun getModConfigScreenFactory(): ConfigScreenFactory<*> {
-        return ConfigScreenFactory { parent ->
+    override fun getModConfigScreenFactory(): ConfigScreenFactory<*> =
+        ConfigScreenFactory { parent ->
             AutoConfig.getConfigScreen(DankConfig::class.java, parent).get()
         }
-    }
-
 }
