@@ -1,5 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.util.UtilFunctions
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import org.slf4j.LoggerFactory
@@ -59,6 +60,43 @@ object DataHandler {
 
         currentSessionFile = File(sessionsFolder, "$dateString-$sessionIndex.csv")
         currentSessionFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,BlocksMined,Fortune,Momentum,Artifacts\n")
+    }
+
+    fun prepareCFFile() {
+        val cfFolder = File(frenzyRoot, "champion")
+        if (!cfFolder.exists()) cfFolder.mkdirs()
+
+        val date = getUtcDateString()
+        var cfNum = 1
+        while (File(cfFolder, "$date-$cfNum.csv").exists()) cfNum++
+
+        currentCFFile = File(cfFolder, "$date-$cfNum.csv")
+        currentCFFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum,Artifacts\n")
+    }
+
+    fun saveFrenzy(
+        type: String,
+        header: String,
+        data: String,
+    ) {
+        val folder = File(frenzyRoot, type)
+        if (!folder.exists()) folder.mkdirs()
+
+        val date = getUtcDateString()
+        val timestamp = getUtcDateTime().format(TIME_FORMATTER)
+        var num = 1
+        while (File(folder, "${type.uppercase()}-$date-summary-$num.csv").exists()) num++
+
+        val file = File(folder, "${type.uppercase()}-$date-summary-$num.csv")
+        try {
+            file.writeText("Timestamp,$header\n$timestamp,$data\n")
+            UtilFunctions.showToast(
+                "Frenzy Saved",
+                "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/",
+            )
+        } catch (e: Exception) {
+            logger.error("Failed to log", e)
+        }
     }
 
     fun logStats(
