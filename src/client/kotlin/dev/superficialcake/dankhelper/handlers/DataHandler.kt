@@ -1,5 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.util.UtilFunctions
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import org.slf4j.LoggerFactory
@@ -62,7 +63,7 @@ object DataHandler {
         currentSessionFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,BlocksMined,Fortune,Momentum,Artifacts\n")
     }
 
-    private fun prepareCFFile() {
+    fun prepareCFFile() {
         val cfFolder = File(frenzyRoot, "champion")
         if (!cfFolder.exists()) cfFolder.mkdirs()
 
