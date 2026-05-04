@@ -7,14 +7,18 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
 
 class EditHud : Screen(Text.literal("Edit HUD Position")) {
-
     private var dragging = false
     private var dragOffsetX = 0.0
     private var dragOffsetY = 0.0
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
 
-    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(context, mouseX, mouseY, delta )
+    override fun render(
+        context: DrawContext,
+        mouseX: Int,
+        mouseY: Int,
+        delta: Float,
+    ) {
+        super.render(context, mouseX, mouseY, delta)
 
         val config = configHolder.config
         val x = config.hudX
@@ -30,11 +34,15 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
             Text.translatable("text.ui.dankhelper.move_hud"),
             width / 2,
             20,
-            0xFFFFFF
+            0xFFFFFF,
         )
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(
+        mouseX: Double,
+        mouseY: Double,
+        button: Int,
+    ): Boolean {
         val config = configHolder.config
         val x = config.hudX
         val y = config.hudY
@@ -50,7 +58,13 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
         return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(
+        mouseX: Double,
+        mouseY: Double,
+        button: Int,
+        deltaX: Double,
+        deltaY: Double,
+    ): Boolean {
         if (dragging) {
             val config = configHolder.config
             val w = DankHud.currentWidth
@@ -64,7 +78,7 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
             val maxX = maxOf(minX, this.width - w)
             val maxY = maxOf(minY, this.height - h)
 
-            //Accounts for padding, background can no longer be cut off by edge of screen
+            // Accounts for padding, background can no longer be cut off by edge of screen
             config.hudX = newX.coerceIn(minX, maxX)
             config.hudY = newY.coerceIn(minY, maxY)
             return true
@@ -72,7 +86,11 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
     }
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseReleased(
+        mouseX: Double,
+        mouseY: Double,
+        button: Int,
+    ): Boolean {
         if (dragging && button == 0) {
             dragging = false
             configHolder.save()
@@ -81,7 +99,5 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
         return super.mouseReleased(mouseX, mouseY, button)
     }
 
-    override fun shouldPause(): Boolean {
-        return false
-    }
+    override fun shouldPause(): Boolean = false
 }

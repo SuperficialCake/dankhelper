@@ -1,17 +1,20 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
-import dev.superficialcake.dankhelper.config.DankConfig
 import me.shedaniel.autoconfig.AutoConfig
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
 object MessageHandler {
-
     private var lastProcessTime: Long = 0
-    private val MINING_PATTERN = """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings""".toRegex()
-    private val FF_SUMMARY_PATTERN = """([\d.,]+)\s+Tokens,\s+and\s+([\d.,]+)\s+rare keys\s+from\s+([\d.,]+)\s+fish\s+with\s+([\d.,]+)\s+casts""".toRegex()
+    private val MINING_PATTERN =
+        """\$([\d.,\w]+),\s+([\d.,]+)\s+tokens,\s+([\d.,]+)\s+Crates\s+and\s+([\d.,]+)\s+Keys\s+from\s+([\d.,]+)\s+blocks\s+with\s+([\d.,]+)\s+swings"""
+            .toRegex()
+    private val FF_SUMMARY_PATTERN =
+        """([\d.,]+)\s+Tokens,\s+and\s+([\d.,]+)\s+rare keys\s+from\s+([\d.,]+)\s+fish\s+with\s+([\d.,]+)\s+casts"""
+            .toRegex()
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
@@ -21,23 +24,33 @@ object MessageHandler {
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
 
-
-
-    fun onGameMessage(message: Text, overlay: Boolean) {
-
+    fun onGameMessage(
+        message: Text,
+        overlay: Boolean,
+    ) {
         val text = message.string
-        if (text.startsWith("Personal Champion Frenzy Event has been Activated")){
+        if (text.startsWith("Personal Champion Frenzy Event has been Activated")) {
             inCF = true
             if (config.championFrenzyHudLogging) DataHandler.prepareCFFile()
-            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has started" else "Champion Frenzy has started. UI updating paused"
+            val toastMsg =
+                if (config.championFrenzyHudLogging) {
+                    "Champion Frenzy has started"
+                } else {
+                    "Champion Frenzy has started. UI updating paused"
+                }
             UtilFunctions.showToast("Champion Frenzy Started", toastMsg)
         }
-        if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")){
+        if (text.startsWith("Personal Champion Frenzy Event has been Deactivated")) {
             inCF = false
-            val toastMsg = if (config.championFrenzyHudLogging) "Champion Frenzy has ended" else "Champion Frenzy has ended . UI updating resumed"
+            val toastMsg =
+                if (config.championFrenzyHudLogging) {
+                    "Champion Frenzy has ended"
+                } else {
+                    "Champion Frenzy has ended . UI updating resumed"
+                }
             UtilFunctions.showToast("Champion Frenzy Ended", toastMsg)
         }
-        if (text.startsWith("(Rankup)")){
+        if (text.startsWith("(Rankup)")) {
             val match = RANKUP_PATTERN.find(text) ?: return
             val costStr = match.groupValues[1].replace(",", "")
             val costVal = costStr.toBigDecimalOrNull() ?: return
@@ -47,7 +60,7 @@ object MessageHandler {
         }
 
         when {
-            text.contains("Increased Fortune") ->{
+            text.contains("Increased Fortune") -> {
                 val matchFortune = FORTUNE_PATTERN.find(text) ?: return
                 val (source, amount) = matchFortune.destructured
 
@@ -55,7 +68,7 @@ object MessageHandler {
                 logger.info("Fortune increased to ${StatsManager.sumFortune}")
             }
 
-            text.contains("Increased Momentum") ->{
+            text.contains("Increased Momentum") -> {
                 val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
                 val (source, amount) = matchMomentum.destructured
 
@@ -68,18 +81,21 @@ object MessageHandler {
                 val (money, tokens, crates, keys, blocks, swings) = match.destructured
                 val moneyVal = parseSuffixedNum(money).toPlainString()
 
-                val csvRow = "$moneyVal,${tokens.replace(",", "")},${crates.replace(",", "")}," +
+                val csvRow =
+                    "$moneyVal,${tokens.replace(",", "")},${crates.replace(",", "")}," +
                         "${keys.replace(",", "")},${blocks.replace(",", "")},${swings.replace(",", "")}"
 
-                if (config.championFrenzyHudLogging)
+                if (config.championFrenzyHudLogging) {
                     DataHandler.saveFrenzy("champion", "Money,Tokens,Crates,Keys,Blocks,Swings", csvRow)
+                }
             }
 
             text.startsWith("(FishingFrenzy) You've earned") -> {
                 val match = FF_SUMMARY_PATTERN.find(text) ?: return
                 val (tokens, keys, fish, casts) = match.destructured
 
-                val csvRow = "${tokens.replace(",", "")},${keys.replace(",", "")}," +
+                val csvRow =
+                    "${tokens.replace(",", "")},${keys.replace(",", "")}," +
                         "${fish.replace(",", "")},${casts.replace(",", "")}"
 
                 DataHandler.saveFrenzy("fishing", "Tokens,Keys,Fish,Casts", csvRow)
@@ -98,7 +114,10 @@ object MessageHandler {
         processMiningMessage(text, inCF)
     }
 
-    private fun processMiningMessage(text: String, isCF: Boolean) {
+    private fun processMiningMessage(
+        text: String,
+        isCF: Boolean,
+    ) {
         val match = MINING_PATTERN.find(text) ?: return
         val (moneyStr, tokensStr, crates, keys, blocks, swings) = match.destructured
 
@@ -110,7 +129,7 @@ object MessageHandler {
         val keysVal = keys.replace(",", "").toLongOrNull() ?: 0L
         val blocksVal = blocks.replace(",", "").toLongOrNull() ?: 0L
 
-            val shouldSendCF = isCF && config.championFrenzyHudLogging
+        val shouldSendCF = isCF && config.championFrenzyHudLogging
         StatsManager.updateStats(moneyVal, tokensVal, cratesVal, keysVal, swingsVal, blocksVal, shouldSendCF)
     }
 }
