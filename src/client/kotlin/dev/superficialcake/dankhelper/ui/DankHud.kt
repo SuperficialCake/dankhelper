@@ -142,16 +142,21 @@ object DankHud {
         val minStr = UtilFunctions.formatNumber(min)
         val labelWidth = 25
 
-        fun drawScaledLabel(text: String, lx: Int, ly: Int, color: Int) {
+        fun drawScaledLabel(
+            text: String,
+            lx: Int,
+            ly: Int,
+            color: Int,
+        ) {
             val tw = textRenderer.getWidth(text)
             if (tw > labelWidth) {
                 val scale = labelWidth.toFloat() / tw
                 val matrices = context.matrices
-                matrices.push()
-                matrices.translate(lx.toFloat(), ly.toFloat(), 0f)
-                matrices.scale(scale, scale, 1f)
+                matrices.pushMatrix()
+                matrices.translate(lx.toFloat(), ly.toFloat())
+                matrices.scale(scale, scale)
                 context.drawTextWithShadow(textRenderer, text, 0, 0, color)
-                matrices.pop()
+                matrices.popMatrix()
             } else {
                 context.drawTextWithShadow(textRenderer, text, lx, ly, color)
             }
