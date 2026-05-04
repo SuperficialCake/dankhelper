@@ -4,12 +4,11 @@
 	"version": "${version}",
 	"name": "Dank Helper",
 	"description": "THIS MOD IS NOT DIRECTLY AFFILIATED WITH DANK PRISON!\nTHIS MOD IS A COMMUNITY PROJECT\n\nProvides helpful UI tools for the DankPrison minecraft server",
-	"authors": [
-		"SuperficialCake"
+	"contributors": [
+		"SuperficialCake",
+		"Pepe_Neutron",
+		"YouAreACatgirl"
 	],
-	"contact": {
-		"email": "dankhelper@superficialcake.dev"
-	},
 	"license": "GPL-3.0-ONLY",
 	"icon": "assets/dankhelper/icon.png",
 	"environment": "client",
