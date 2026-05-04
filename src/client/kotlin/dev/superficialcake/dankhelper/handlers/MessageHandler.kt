@@ -62,7 +62,7 @@ object MessageHandler {
         when {
             text.contains("Increased Fortune") -> {
                 val matchFortune = FORTUNE_PATTERN.find(text) ?: return
-                val (source, amount) = matchFortune.destructured
+                val (_, amount) = matchFortune.destructured
 
                 StatsManager.addFortune(amount.toLong())
                 logger.info("Fortune increased to ${StatsManager.sumFortune}")
@@ -70,7 +70,7 @@ object MessageHandler {
 
             text.contains("Increased Momentum") -> {
                 val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
-                val (source, amount) = matchMomentum.destructured
+                val (_, amount) = matchMomentum.destructured
 
                 StatsManager.addMomentum(amount.toLong())
                 logger.info("Momentum increased to ${StatsManager.sumMomentum}")
