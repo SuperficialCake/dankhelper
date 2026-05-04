@@ -38,6 +38,6 @@
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*",
 		"cloth-config": ">=17.0.144",
-		"modmenu": ">=13.0.4"
+		"modmenu": ">=13.0.3"
 	}
 }
