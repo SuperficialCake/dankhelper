@@ -96,7 +96,7 @@ object MessageHandler {
                 val matchRewards = REWARDS_PATTERN.find(text) ?: return
 
                 val (action, amount, reward) = matchRewards.destructured
-                if (config.webhookURL != null) {
+                if (config.webhookURL.isNotBlank()) {
                     RewardsWebhook.sendReward(username, strippedUUID, action, amount, reward)
                 }
             }
