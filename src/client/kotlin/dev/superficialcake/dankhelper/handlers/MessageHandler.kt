@@ -5,6 +5,7 @@ import dev.superficialcake.dankhelper.util.RewardsWebhook
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import me.shedaniel.autoconfig.AutoConfig
+import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import org.slf4j.LoggerFactory
 
@@ -29,8 +30,13 @@ object MessageHandler {
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
 
-    private val username = MinecraftClient.getInstance().session.username
-    private val uuid = MinecraftClient.getInstance().gameProfile.id
+    private val username =
+        Minecraft
+            .getInstance()
+            .player
+            ?.displayName
+            .toString()
+    private val uuid = Minecraft.getInstance().gameProfile.id
     private val strippedUUID = uuid.toString().replace("-", "")
 
     fun onGameMessage(

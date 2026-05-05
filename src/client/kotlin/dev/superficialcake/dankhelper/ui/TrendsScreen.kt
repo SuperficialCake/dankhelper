@@ -1,8 +1,9 @@
 package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.util.UtilFunctions
-import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import java.awt.Desktop
 import java.io.File
@@ -73,29 +74,25 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         scrollOffset = 0
     }
 
-    override fun shouldPause(): Boolean = false
+    override fun isPauseScreen(): Boolean = false
 
-    override fun renderBackground(
-        context: DrawContext,
+    override fun extractRenderState(
+        graphics: GuiGraphicsExtractor,
         mouseX: Int,
         mouseY: Int,
         delta: Float,
     ) {
-        // Suppress Minecraft's blur so the game world stays visible
-    }
+        this.mouseX = mouseX
+        this.mouseY = mouseY
 
-    override fun render(
-        context: DrawContext,
-        mx: Int,
-        my: Int,
-        delta: Float,
-    ) {
-        mouseX = mx
-        mouseY = my
-        context.fill(0, 0, width, height, backgroundColor)
-        renderTitleBar(context, width)
-        renderTabs(context, width)
-        renderPicker(context, width)
+        // Suppress Minecraft's default background by not calling super here,
+        // then draw our own full background below.
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
+
+        graphics.fill(0, 0, width, height, backgroundColor)
+        renderTitleBar(graphics, width)
+        renderTabs(graphics, width)
+        renderPicker(graphics, width)
 
         val contentY = titleHeight + tabHeight + pickerHeight + 2
         val contentHeight = height - contentY - pad
@@ -103,49 +100,47 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         when (currentTab) {
             Tab.SESSIONS -> {
                 if (days.isEmpty()) {
-                    renderEmpty(context, width, contentY, contentHeight)
+                    renderEmpty(graphics, width, contentY, contentHeight)
                 } else {
-                    renderSessionDetail(context, days[selectedIndex], width, contentY, contentHeight)
+                    renderSessionDetail(graphics, days[selectedIndex], width, contentY, contentHeight)
                 }
             }
 
             Tab.CHAMPION -> {
                 if (cfEntries.isEmpty()) {
-                    renderEmpty(context, width, contentY, contentHeight)
+                    renderEmpty(graphics, width, contentY, contentHeight)
                 } else {
-                    renderCfDetail(context, cfEntries[selectedIndex], width, contentY, contentHeight)
+                    renderCfDetail(graphics, cfEntries[selectedIndex], width, contentY, contentHeight)
                 }
             }
 
             Tab.FISHING -> {
                 if (ffEntries.isEmpty()) {
-                    renderEmpty(context, width, contentY, contentHeight)
+                    renderEmpty(graphics, width, contentY, contentHeight)
                 } else {
-                    renderFfDetail(context, ffEntries[selectedIndex], width, contentY, contentHeight)
+                    renderFfDetail(graphics, ffEntries[selectedIndex], width, contentY, contentHeight)
                 }
             }
         }
-
-        super.render(context, mx, my, delta)
     }
 
     //  Title bar
 
     private fun closeButtonBounds(screenWidth: Int): Pair<Int, Int> {
         val label = "§c✕  Close"
-        val bw = textRenderer.getWidth(label) + pad * 2
+        val bw = minecraft.font.width(label) + pad * 2
         return (screenWidth - bw - pad) to bw
     }
 
     private fun folderButtonBounds(screenWidth: Int): Pair<Int, Int> {
         val label = "§7⧃  Open Folder"
-        val bw = textRenderer.getWidth(label) + pad * 2
+        val bw = minecraft.font.width(label) + pad * 2
         val bx = screenWidth - closeButtonBounds(screenWidth).second - pad - bw - 4
         return bx to bw
     }
 
     private fun currentFolder(): File {
-        val gameDir = Minecraft.getInstance().gameDirectory
+        val gameDir = minecraft.gameDirectory
         val subfolder =
             when (currentTab) {
                 Tab.SESSIONS -> "sessions"
@@ -162,14 +157,14 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
     }
 
     private fun renderTitleBar(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         screenWidth: Int,
     ) {
-        context.fill(0, 0, screenWidth, titleHeight, panelColor)
-        context.fill(0, titleHeight, screenWidth, titleHeight + 1, borderColor)
-        context.drawTextWithShadow(
-            textRenderer,
-            "§b§lDankHelper §7> §f§lTrends",
+        graphics.fill(0, 0, screenWidth, titleHeight, panelColor)
+        graphics.fill(0, titleHeight, screenWidth, titleHeight + 1, borderColor)
+        graphics.text(
+            minecraft.font,
+            Component.literal("§b§lDankHelper §7> §f§lTrends"),
             pad,
             (titleHeight - 9) / 2,
             textColor,
@@ -177,33 +172,33 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
 
         val (closeBx, closeBw) = closeButtonBounds(screenWidth)
         val closeHovered = mouseX in closeBx..(closeBx + closeBw) && mouseY in 0..titleHeight
-        context.fill(closeBx, 1, closeBx + closeBw, titleHeight - 1, if (closeHovered) 0xFF3A1A1A.toInt() else 0xFF2A1010.toInt())
-        drawBorder(context, closeBx, 1, closeBw, titleHeight - 2, if (closeHovered) 0xFFFF5555.toInt() else 0xFF7A2222.toInt())
-        context.drawTextWithShadow(textRenderer, "§c✕  Close", closeBx + pad, (titleHeight - 9) / 2, textColor)
+        graphics.fill(closeBx, 1, closeBx + closeBw, titleHeight - 1, if (closeHovered) 0xFF3A1A1A.toInt() else 0xFF2A1010.toInt())
+        drawBorder(graphics, closeBx, 1, closeBw, titleHeight - 2, if (closeHovered) 0xFFFF5555.toInt() else 0xFF7A2222.toInt())
+        graphics.text(minecraft.font, Component.literal("§c✕  Close"), closeBx + pad, (titleHeight - 9) / 2, textColor)
 
         val (folderBx, folderBw) = folderButtonBounds(screenWidth)
         val folderHovered = mouseX in folderBx..(folderBx + folderBw) && mouseY in 0..titleHeight
-        context.fill(folderBx, 1, folderBx + folderBw, titleHeight - 1, if (folderHovered) 0xFF1A2A1A.toInt() else 0xFF101A10.toInt())
-        drawBorder(context, folderBx, 1, folderBw, titleHeight - 2, if (folderHovered) 0xFF55FF55.toInt() else 0xFF225522.toInt())
-        context.drawTextWithShadow(textRenderer, "§7⧃  Open Folder", folderBx + pad, (titleHeight - 9) / 2, textColor)
+        graphics.fill(folderBx, 1, folderBx + folderBw, titleHeight - 1, if (folderHovered) 0xFF1A2A1A.toInt() else 0xFF101A10.toInt())
+        drawBorder(graphics, folderBx, 1, folderBw, titleHeight - 2, if (folderHovered) 0xFF55FF55.toInt() else 0xFF225522.toInt())
+        graphics.text(minecraft.font, Component.literal("§7⧃  Open Folder"), folderBx + pad, (titleHeight - 9) / 2, textColor)
     }
 
     //  Tab bar
 
     private fun renderTabs(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         screenWidth: Int,
     ) {
         val y = titleHeight
-        context.fill(0, y, screenWidth, y + tabHeight, tabColor)
-        context.fill(0, y + tabHeight, screenWidth, y + tabHeight + 1, borderColor)
+        graphics.fill(0, y, screenWidth, y + tabHeight, tabColor)
+        graphics.fill(0, y + tabHeight, screenWidth, y + tabHeight + 1, borderColor)
 
         val tabWidth = screenWidth / Tab.entries.size
         for ((i, tab) in Tab.entries.withIndex()) {
             val tabX = i * tabWidth
             val isSelected = tab == currentTab
             val isHovered = mouseX in tabX..(tabX + tabWidth) && mouseY in y..(y + tabHeight)
-            context.fill(
+            graphics.fill(
                 tabX,
                 y,
                 tabX + tabWidth,
@@ -216,26 +211,26 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
                     tabColor
                 },
             )
-            if (isSelected) context.fill(tabX, y + tabHeight - 2, tabX + tabWidth, y + tabHeight, accentColor)
-            context.fill(tabX + tabWidth - 1, y, tabX + tabWidth, y + tabHeight, borderColor)
+            if (isSelected) graphics.fill(tabX, y + tabHeight - 2, tabX + tabWidth, y + tabHeight, accentColor)
+            graphics.fill(tabX + tabWidth - 1, y, tabX + tabWidth, y + tabHeight, borderColor)
             val label = if (isSelected) "§f§l${tab.label}" else "§7${tab.label}"
-            context.drawCenteredTextWithShadow(textRenderer, label, tabX + tabWidth / 2, y + (tabHeight - 9) / 2, textColor)
+            graphics.centeredText(minecraft.font, Component.literal(label), tabX + tabWidth / 2, y + (tabHeight - 9) / 2, textColor)
         }
     }
 
     //  Picker
 
     private fun renderPicker(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         screenWidth: Int,
     ) {
         val y = titleHeight + tabHeight + 1
-        context.fill(0, y, screenWidth, y + pickerHeight, panelColor)
-        context.fill(0, y + pickerHeight, screenWidth, y + pickerHeight + 1, borderColor)
+        graphics.fill(0, y, screenWidth, y + pickerHeight, panelColor)
+        graphics.fill(0, y + pickerHeight, screenWidth, y + pickerHeight + 1, borderColor)
 
         val entries = currentEntries()
         if (entries.isEmpty()) {
-            context.drawTextWithShadow(textRenderer, "§7No data", pad, y + (pickerHeight - 9) / 2, dimmedTextColor)
+            graphics.text(minecraft.font, Component.literal("§7No data"), pad, y + (pickerHeight - 9) / 2, dimmedTextColor)
             return
         }
 
@@ -252,43 +247,31 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val leftArrowHovered = mouseX in arrowX..(arrowX + arrowSize) && mouseY in arrowY..(arrowY + arrowSize)
         val rightArrowHovered = mouseX in rightArrowX..(rightArrowX + arrowSize) && mouseY in arrowY..(arrowY + arrowSize)
 
-        context.fill(
+        graphics.fill(
             arrowX,
             arrowY,
             arrowX + arrowSize,
             arrowY + arrowSize,
-            if (canScrollLeft &&
-                leftArrowHovered
-            ) {
-                hoverColor
-            } else {
-                panelColor
-            },
+            if (canScrollLeft && leftArrowHovered) hoverColor else panelColor,
         )
-        context.drawCenteredTextWithShadow(
-            textRenderer,
-            if (canScrollLeft) "§f◄" else "§8◄",
+        graphics.centeredText(
+            minecraft.font,
+            Component.literal(if (canScrollLeft) "§f◄" else "§8◄"),
             arrowX + arrowSize / 2,
             arrowY + (arrowSize - 9) / 2,
             textColor,
         )
 
-        context.fill(
+        graphics.fill(
             rightArrowX,
             arrowY,
             rightArrowX + arrowSize,
             arrowY + arrowSize,
-            if (canScrollRight &&
-                rightArrowHovered
-            ) {
-                hoverColor
-            } else {
-                panelColor
-            },
+            if (canScrollRight && rightArrowHovered) hoverColor else panelColor,
         )
-        context.drawCenteredTextWithShadow(
-            textRenderer,
-            if (canScrollRight) "§f►" else "§8►",
+        graphics.centeredText(
+            minecraft.font,
+            Component.literal(if (canScrollRight) "§f►" else "§8►"),
             rightArrowX + arrowSize / 2,
             arrowY + (arrowSize - 9) / 2,
             textColor,
@@ -302,7 +285,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
             val by = arrowY
             val isSelected = entryIndex == selectedIndex
             val isHovered = mouseX in bx..(bx + buttonWidth) && mouseY in by..(by + buttonHeight)
-            context.fill(
+            graphics.fill(
                 bx,
                 by,
                 bx + buttonWidth,
@@ -316,13 +299,13 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
                 },
             )
             val borderHighlight = if (isSelected) accentColor else borderColor
-            context.fill(bx, by, bx + buttonWidth, by + 1, borderHighlight)
-            context.fill(bx, by + buttonHeight - 1, bx + buttonWidth, by + buttonHeight, borderHighlight)
-            context.fill(bx, by, bx + 1, by + buttonHeight, borderHighlight)
-            context.fill(bx + buttonWidth - 1, by, bx + buttonWidth, by + buttonHeight, borderHighlight)
+            graphics.fill(bx, by, bx + buttonWidth, by + 1, borderHighlight)
+            graphics.fill(bx, by + buttonHeight - 1, bx + buttonWidth, by + buttonHeight, borderHighlight)
+            graphics.fill(bx, by, bx + 1, by + buttonHeight, borderHighlight)
+            graphics.fill(bx + buttonWidth - 1, by, bx + buttonWidth, by + buttonHeight, borderHighlight)
             val labelColor = if (isSelected) accentColor else textColor
-            context.drawCenteredTextWithShadow(textRenderer, "§f$topLabel", bx + buttonWidth / 2, by + 4, labelColor)
-            context.drawCenteredTextWithShadow(textRenderer, bottomLabel, bx + buttonWidth / 2, by + 14, dimmedTextColor)
+            graphics.centeredText(minecraft.font, Component.literal("§f$topLabel"), bx + buttonWidth / 2, by + 4, labelColor)
+            graphics.centeredText(minecraft.font, Component.literal(bottomLabel), bx + buttonWidth / 2, by + 14, dimmedTextColor)
         }
     }
 
@@ -361,14 +344,14 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         }
 
     private fun renderEmpty(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         screenWidth: Int,
         y: Int,
         h: Int,
     ) {
-        context.drawCenteredTextWithShadow(
-            textRenderer,
-            "§7No data found. Play on DankPrison to generate files.",
+        graphics.centeredText(
+            minecraft.font,
+            Component.literal("§7No data found. Play on DankPrison to generate files."),
             screenWidth / 2,
             y + h / 2,
             dimmedTextColor,
@@ -378,7 +361,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
     //  Session detail
 
     private fun renderSessionDetail(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         day: DayStats,
         screenWidth: Int,
         y: Int,
@@ -388,18 +371,18 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val contentWidth = screenWidth - pad * 2
         val summaryHeight = 36
 
-        context.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
-        drawBorder(context, x, y + pad, contentWidth, summaryHeight, borderColor)
-        context.drawTextWithShadow(
-            textRenderer,
-            "§f§l${day.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))}",
+        graphics.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
+        drawBorder(graphics, x, y + pad, contentWidth, summaryHeight, borderColor)
+        graphics.text(
+            minecraft.font,
+            Component.literal("§f§l${day.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))}"),
             x + 6,
             y + pad + 9,
             textColor,
         )
-        context.drawTextWithShadow(
-            textRenderer,
-            "§7${day.sessions} session(s)  ·  ${day.minuteCount} samples",
+        graphics.text(
+            minecraft.font,
+            Component.literal("§7${day.sessions} session(s)  ·  ${day.minuteCount} samples"),
             x + 6,
             y + pad + 20,
             dimmedTextColor,
@@ -408,10 +391,10 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
             "§aMoney: §f${UtilFunctions.formatNumber(day.totalMoney.toDouble())}" +
                 "   §bTokens: §f${fmtLong(day.totalTokens)}" +
                 "   §eBlocks: §f${fmtLong(day.totalBlocks)}"
-        context.drawTextWithShadow(
-            textRenderer,
-            totals,
-            x + contentWidth - textRenderer.getWidth(totals) - pad,
+        graphics.text(
+            minecraft.font,
+            Component.literal(totals),
+            x + contentWidth - minecraft.font.width(totals) - pad,
             y + pad + (summaryHeight - 9) / 2,
             textColor,
         )
@@ -430,7 +413,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
         for ((i, metric) in metrics.withIndex()) {
             renderStatCard(
-                context,
+                graphics,
                 x + i * (cardWidth + buttonGap),
                 cardsY,
                 cardWidth,
@@ -445,19 +428,9 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val extraCardsHeight = 31
         val halfCardWidth = (contentWidth - buttonGap) / 2
 
+        renderStatCard(graphics, x, extraCardsY, halfCardWidth, extraCardsHeight, "§9§lMomentum", fmtLong(day.totalMomentum), momentumColor)
         renderStatCard(
-            context,
-            x,
-            extraCardsY,
-            halfCardWidth,
-            extraCardsHeight,
-            "§9§lMomentum",
-            fmtLong(day.totalMomentum),
-            momentumColor,
-        )
-
-        renderStatCard(
-            context,
+            graphics,
             x + halfCardWidth + buttonGap,
             extraCardsY,
             contentWidth - halfCardWidth - buttonGap,
@@ -471,27 +444,23 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val graphHeight = h - (graphsY - y) - pad
         val halfWidth = (contentWidth - pad) / 2
 
-        if (day.moneyTimeline.size >=
-            2
-        ) {
-            renderGraph(context, x, graphsY, halfWidth, graphHeight, day.moneyTimeline, moneyColor, "Money / Minute")
+        if (day.moneyTimeline.size >= 2) {
+            renderGraph(graphics, x, graphsY, halfWidth, graphHeight, day.moneyTimeline, moneyColor, "Money / Minute")
         } else {
-            renderEmptyGraph(context, x, graphsY, halfWidth, graphHeight, "Money / Minute")
+            renderEmptyGraph(graphics, x, graphsY, halfWidth, graphHeight, "Money / Minute")
         }
 
-        if (day.tokenTimeline.size >=
-            2
-        ) {
-            renderGraph(context, x + halfWidth + pad, graphsY, halfWidth, graphHeight, day.tokenTimeline, tokenColor, "Tokens / Minute")
+        if (day.tokenTimeline.size >= 2) {
+            renderGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, day.tokenTimeline, tokenColor, "Tokens / Minute")
         } else {
-            renderEmptyGraph(context, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
+            renderEmptyGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
         }
     }
 
     //  Champion Frenzy detail
 
     private fun renderCfDetail(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         cf: CfEntry,
         screenWidth: Int,
         y: Int,
@@ -501,24 +470,24 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val contentWidth = screenWidth - pad * 2
         val summaryHeight = 36
 
-        context.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
-        drawBorder(context, x, y + pad, contentWidth, summaryHeight, borderColor)
-        context.drawTextWithShadow(
-            textRenderer,
-            "§f§l${cf.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))} §7at §f${cf.timestamp}",
+        graphics.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
+        drawBorder(graphics, x, y + pad, contentWidth, summaryHeight, borderColor)
+        graphics.text(
+            minecraft.font,
+            Component.literal("§f§l${cf.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))} §7at §f${cf.timestamp}"),
             x + 6,
             y + pad + 9,
             textColor,
         )
-        context.drawTextWithShadow(textRenderer, "§7${cf.minuteCount} minute(s) logged", x + 6, y + pad + 20, dimmedTextColor)
+        graphics.text(minecraft.font, Component.literal("§7${cf.minuteCount} minute(s) logged"), x + 6, y + pad + 20, dimmedTextColor)
         val totals =
             "§aMoney: §f${UtilFunctions.formatNumber(cf.totalMoney.toDouble())}" +
                 "   §bTokens: §f${fmtLong(cf.totalTokens)}" +
                 "   §eCrates: §f${fmtLong(cf.totalCrates)}"
-        context.drawTextWithShadow(
-            textRenderer,
-            totals,
-            x + contentWidth - textRenderer.getWidth(totals) - pad,
+        graphics.text(
+            minecraft.font,
+            Component.literal(totals),
+            x + contentWidth - minecraft.font.width(totals) - pad,
             y + pad + (summaryHeight - 9) / 2,
             textColor,
         )
@@ -537,7 +506,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
         for ((i, metric) in metrics.withIndex()) {
             renderStatCard(
-                context,
+                graphics,
                 x + i * (cardWidth + buttonGap),
                 cardsY,
                 cardWidth,
@@ -552,27 +521,23 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val graphHeight = h - (graphsY - y) - pad
         val halfWidth = (contentWidth - pad) / 2
 
-        if (cf.moneyTimeline.size >=
-            2
-        ) {
-            renderGraph(context, x, graphsY, halfWidth, graphHeight, cf.moneyTimeline, moneyColor, "Money / Minute")
+        if (cf.moneyTimeline.size >= 2) {
+            renderGraph(graphics, x, graphsY, halfWidth, graphHeight, cf.moneyTimeline, moneyColor, "Money / Minute")
         } else {
-            renderEmptyGraph(context, x, graphsY, halfWidth, graphHeight, "Money / Minute")
+            renderEmptyGraph(graphics, x, graphsY, halfWidth, graphHeight, "Money / Minute")
         }
 
-        if (cf.tokenTimeline.size >=
-            2
-        ) {
-            renderGraph(context, x + halfWidth + pad, graphsY, halfWidth, graphHeight, cf.tokenTimeline, tokenColor, "Tokens / Minute")
+        if (cf.tokenTimeline.size >= 2) {
+            renderGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, cf.tokenTimeline, tokenColor, "Tokens / Minute")
         } else {
-            renderEmptyGraph(context, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
+            renderEmptyGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
         }
     }
 
     //  Fishing Frenzy detail
 
     private fun renderFfDetail(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         ff: FfEntry,
         screenWidth: Int,
         y: Int,
@@ -582,16 +547,16 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val contentWidth = screenWidth - pad * 2
         val summaryHeight = 36
 
-        context.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
-        drawBorder(context, x, y + pad, contentWidth, summaryHeight, borderColor)
-        context.drawTextWithShadow(
-            textRenderer,
-            "§f§l${ff.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))} §7at §f${ff.timestamp}",
+        graphics.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
+        drawBorder(graphics, x, y + pad, contentWidth, summaryHeight, borderColor)
+        graphics.text(
+            minecraft.font,
+            Component.literal("§f§l${ff.date.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))} §7at §f${ff.timestamp}"),
             x + 6,
             y + pad + 9,
             textColor,
         )
-        context.drawTextWithShadow(textRenderer, "§7Fishing Frenzy Summary", x + 6, y + pad + 20, dimmedTextColor)
+        graphics.text(minecraft.font, Component.literal("§7Fishing Frenzy Summary"), x + 6, y + pad + 20, dimmedTextColor)
 
         val cardsY = y + pad + summaryHeight + pad
         val cardHeight = 34
@@ -604,7 +569,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val cardWidth = (contentWidth - (ffMetrics.size - 1) * buttonGap) / ffMetrics.size
         for ((i, metric) in ffMetrics.withIndex()) {
             renderStatCard(
-                context,
+                graphics,
                 x + i * (cardWidth + buttonGap),
                 cardsY,
                 cardWidth,
@@ -617,9 +582,9 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
 
         val derivedY = cardsY + cardHeight + pad
         val derivedHeight = 48
-        context.fill(x, derivedY, x + contentWidth, derivedY + derivedHeight, panelColor)
-        drawBorder(context, x, derivedY, contentWidth, derivedHeight, borderColor)
-        context.drawTextWithShadow(textRenderer, "§7Derived", x + pad, derivedY + 4, dimmedTextColor)
+        graphics.fill(x, derivedY, x + contentWidth, derivedY + derivedHeight, panelColor)
+        drawBorder(graphics, x, derivedY, contentWidth, derivedHeight, borderColor)
+        graphics.text(minecraft.font, Component.literal("§7Derived"), x + pad, derivedY + 4, dimmedTextColor)
 
         val fishPerCast = if (ff.casts > 0) ff.fish.toDouble() / ff.casts else 0.0
         val keysPerCast = if (ff.casts > 0) ff.keys.toDouble() / ff.casts else 0.0
@@ -630,16 +595,16 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
             )
         val derivedColWidth = contentWidth / derived.size
         for ((i, stat) in derived.withIndex()) {
-            context.drawTextWithShadow(textRenderer, stat, x + pad + i * derivedColWidth, derivedY + 18, textColor)
+            graphics.text(minecraft.font, Component.literal(stat), x + pad + i * derivedColWidth, derivedY + 18, textColor)
         }
 
         val historyY = derivedY + derivedHeight + pad
         val historyHeight = h - (historyY - y) - pad
-        if (historyHeight > 20) renderFfHistory(context, x, historyY, contentWidth, historyHeight)
+        if (historyHeight > 20) renderFfHistory(graphics, x, historyY, contentWidth, historyHeight)
     }
 
     private fun renderFfHistory(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x: Int,
         y: Int,
         w: Int,
@@ -650,24 +615,22 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val halfWidth = (w - pad) / 2
 
         if (fishValues.size >= 2) {
-            renderGraph(context, x, y, halfWidth, h, fishValues, fishColor, "Fish per run  (Oldest → Newest)")
+            renderGraph(graphics, x, y, halfWidth, h, fishValues, fishColor, "Fish per run  (Oldest → Newest)")
         } else {
-            renderEmptyGraph(context, x, y, halfWidth, h, "Fish per run  (Oldest → Newest)")
+            renderEmptyGraph(graphics, x, y, halfWidth, h, "Fish per run  (Oldest → Newest)")
         }
 
-        if (keyValues.size >=
-            2
-        ) {
-            renderGraph(context, x + halfWidth + pad, y, halfWidth, h, keyValues, keyColor, "Keys per run  (Oldest → Newest)")
+        if (keyValues.size >= 2) {
+            renderGraph(graphics, x + halfWidth + pad, y, halfWidth, h, keyValues, keyColor, "Keys per run  (Oldest → Newest)")
         } else {
-            renderEmptyGraph(context, x + halfWidth + pad, y, halfWidth, h, "Keys per run  (Oldest → Newest)")
+            renderEmptyGraph(graphics, x + halfWidth + pad, y, halfWidth, h, "Keys per run  (Oldest → Newest)")
         }
     }
 
     //  Shared rendering primitives
 
     private fun renderStatCard(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x: Int,
         y: Int,
         w: Int,
@@ -676,15 +639,15 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         value: String,
         color: Int,
     ) {
-        context.fill(x, y, x + w, y + h, panelColor)
-        drawBorder(context, x, y, w, h, borderColor)
-        context.fill(x, y, x + 2, y + h, color)
-        context.drawTextWithShadow(textRenderer, label, x + 6, y + 5, color)
-        context.drawTextWithShadow(textRenderer, "§f$value", x + 6, y + 20, textColor)
+        graphics.fill(x, y, x + w, y + h, panelColor)
+        drawBorder(graphics, x, y, w, h, borderColor)
+        graphics.fill(x, y, x + 2, y + h, color)
+        graphics.text(minecraft.font, Component.literal(label), x + 6, y + 5, color)
+        graphics.text(minecraft.font, Component.literal("§f$value"), x + 6, y + 20, textColor)
     }
 
     private fun renderGraph(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x: Int,
         y: Int,
         w: Int,
@@ -693,9 +656,9 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         color: Int,
         title: String,
     ) {
-        context.fill(x, y, x + w, y + h, panelColor)
-        drawBorder(context, x, y, w, h, borderColor)
-        context.drawTextWithShadow(textRenderer, "§7$title", x + pad, y + 3, dimmedTextColor)
+        graphics.fill(x, y, x + w, y + h, panelColor)
+        drawBorder(graphics, x, y, w, h, borderColor)
+        graphics.text(minecraft.font, Component.literal("§7$title"), x + pad, y + 3, dimmedTextColor)
 
         val titleHeight = 12
         val graphX = x + pad
@@ -704,7 +667,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val graphHeight = h - titleHeight - pad - 2
 
         for (gridLine in 1..2) {
-            context.fill(
+            graphics.fill(
                 graphX,
                 graphY + (graphHeight * gridLine / 3),
                 graphX + graphWidth,
@@ -723,13 +686,19 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
             val x2 = graphX + ((i + 1) * xStep).toInt()
             val y1 = (graphY + graphHeight) - (((data[i] - minValue) / valueRange) * graphHeight).toInt()
             val y2 = (graphY + graphHeight) - (((data[i + 1] - minValue) / valueRange) * graphHeight).toInt()
-            drawLineSegment(context, x1, y1, x2, y2, color)
+            drawLineSegment(graphics, x1, y1, x2, y2, color)
         }
 
-        context.drawTextWithShadow(textRenderer, "§f${UtilFunctions.formatNumber(maxValue)}", graphX + graphWidth + 2, graphY, color)
-        context.drawTextWithShadow(
-            textRenderer,
-            "§8${UtilFunctions.formatNumber(minValue)}",
+        graphics.text(
+            minecraft.font,
+            Component.literal("§f${UtilFunctions.formatNumber(maxValue)}"),
+            graphX + graphWidth + 2,
+            graphY,
+            color,
+        )
+        graphics.text(
+            minecraft.font,
+            Component.literal("§8${UtilFunctions.formatNumber(minValue)}"),
             graphX + graphWidth + 2,
             graphY + graphHeight - 9,
             dimmedTextColor,
@@ -737,40 +706,40 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
     }
 
     private fun renderEmptyGraph(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x: Int,
         y: Int,
         w: Int,
         h: Int,
         title: String,
     ) {
-        context.fill(x, y, x + w, y + h, panelColor)
-        drawBorder(context, x, y, w, h, borderColor)
-        context.drawTextWithShadow(textRenderer, "§7$title", x + pad, y + 3, dimmedTextColor)
-        context.drawCenteredTextWithShadow(textRenderer, "§8Not enough data", x + w / 2, y + h / 2 - 4, emptyColor)
+        graphics.fill(x, y, x + w, y + h, panelColor)
+        drawBorder(graphics, x, y, w, h, borderColor)
+        graphics.text(minecraft.font, Component.literal("§7$title"), x + pad, y + 3, dimmedTextColor)
+        graphics.centeredText(minecraft.font, Component.literal("§8Not enough data"), x + w / 2, y + h / 2 - 4, emptyColor)
     }
 
     //  Input
 
     override fun mouseClicked(
-        click: Click,
-        doubled: Boolean,
+        event: MouseButtonEvent,
+        doubleClick: Boolean,
     ): Boolean {
         val (closeBx, closeBw) = closeButtonBounds(width)
-        if (click.x >= closeBx && click.x <= closeBx + closeBw && click.y in 0.0..titleHeight.toDouble()) {
-            close()
+        if (event.button() == 0 && event.x() >= closeBx && event.x() <= closeBx + closeBw && event.y() in 0.0..titleHeight.toDouble()) {
+            onClose()
             return true
         }
 
         val (folderBx, folderBw) = folderButtonBounds(width)
-        if (click.x >= folderBx && click.x <= folderBx + folderBw && click.y in 0.0..titleHeight.toDouble()) {
+        if (event.button() == 0 && event.x() >= folderBx && event.x() <= folderBx + folderBw && event.y() in 0.0..titleHeight.toDouble()) {
             openFolder(currentFolder())
             return true
         }
 
-        if (click.y >= titleHeight && click.y <= titleHeight + tabHeight) {
+        if (event.y() >= titleHeight && event.y() <= titleHeight + tabHeight) {
             val tabWidth = width / Tab.entries.size
-            val clickedTab = Tab.entries[(click.x / tabWidth).toInt().coerceIn(0, Tab.entries.size - 1)]
+            val clickedTab = Tab.entries[(event.x() / tabWidth).toInt().coerceIn(0, Tab.entries.size - 1)]
             if (clickedTab != currentTab) {
                 currentTab = clickedTab
                 resetPicker()
@@ -779,7 +748,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         }
 
         val entries = currentEntries()
-        if (entries.isEmpty()) return super.mouseClicked(click, doubled)
+        if (entries.isEmpty()) return super.mouseClicked(event, doubleClick)
 
         val arrowY = titleHeight + tabHeight + 1 + pad
         val rightArrowX = width - pad - buttonHeight
@@ -787,12 +756,14 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val buttonAreaWidth = rightArrowX - buttonGap - buttonAreaX
         val visibleCount = (buttonAreaWidth + buttonGap) / (buttonWidth + buttonGap)
 
-        if (click.x >= pad && click.x <= pad + buttonHeight && click.y >= arrowY && click.y <= arrowY + buttonHeight && scrollOffset > 0) {
+        if (event.button() == 0 && event.x() >= pad && event.x() <= pad + buttonHeight &&
+            event.y() >= arrowY && event.y() <= arrowY + buttonHeight && scrollOffset > 0
+        ) {
             scrollOffset = (scrollOffset - visibleCount).coerceAtLeast(0)
             return true
         }
-        if (click.x >= rightArrowX && click.x <= rightArrowX + buttonHeight && click.y >= arrowY && click.y <= arrowY + buttonHeight &&
-            scrollOffset + visibleCount < entries.size
+        if (event.button() == 0 && event.x() >= rightArrowX && event.x() <= rightArrowX + buttonHeight &&
+            event.y() >= arrowY && event.y() <= arrowY + buttonHeight && scrollOffset + visibleCount < entries.size
         ) {
             scrollOffset = (scrollOffset + visibleCount).coerceAtMost((entries.size - visibleCount).coerceAtLeast(0))
             return true
@@ -802,13 +773,15 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
             val entryIndex = scrollOffset + i
             if (entryIndex >= entries.size) break
             val bx = buttonAreaX + i * (buttonWidth + buttonGap)
-            if (click.x >= bx && click.x <= bx + buttonWidth && click.y >= arrowY && click.y <= arrowY + buttonHeight) {
+            if (event.button() == 0 && event.x() >= bx && event.x() <= bx + buttonWidth &&
+                event.y() >= arrowY && event.y() <= arrowY + buttonHeight
+            ) {
                 selectedIndex = entryIndex
                 return true
             }
         }
 
-        return super.mouseClicked(click, doubled)
+        return super.mouseClicked(event, doubleClick)
     }
 
     override fun mouseScrolled(
@@ -829,21 +802,21 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
     //  Drawing helpers
 
     private fun drawBorder(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x: Int,
         y: Int,
         w: Int,
         h: Int,
         color: Int,
     ) {
-        context.fill(x, y, x + w, y + 1, color)
-        context.fill(x, y + h - 1, x + w, y + h, color)
-        context.fill(x, y, x + 1, y + h, color)
-        context.fill(x + w - 1, y, x + w, y + h, color)
+        graphics.fill(x, y, x + w, y + 1, color)
+        graphics.fill(x, y + h - 1, x + w, y + h, color)
+        graphics.fill(x, y, x + 1, y + h, color)
+        graphics.fill(x + w - 1, y, x + w, y + h, color)
     }
 
     private fun drawLineSegment(
-        context: DrawContext,
+        graphics: GuiGraphicsExtractor,
         x1: Int,
         y1: Int,
         x2: Int,
@@ -851,13 +824,13 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         color: Int,
     ) {
         if (y1 == y2) {
-            context.fill(x1, y1, x2, y1 + 1, color)
+            graphics.fill(x1, y1, x2, y1 + 1, color)
             return
         }
         val midX = (x1 + x2) / 2
-        context.fill(x1, y1, midX, y1 + 1, color)
-        context.fill(midX, minOf(y1, y2), midX + 1, maxOf(y1, y2) + 1, color)
-        context.fill(midX, y2, x2, y2 + 1, color)
+        graphics.fill(x1, y1, midX, y1 + 1, color)
+        graphics.fill(midX, minOf(y1, y2), midX + 1, maxOf(y1, y2) + 1, color)
+        graphics.fill(midX, y2, x2, y2 + 1, color)
     }
 
     //  Formatters
