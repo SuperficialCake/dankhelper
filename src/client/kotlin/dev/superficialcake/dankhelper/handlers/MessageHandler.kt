@@ -5,8 +5,8 @@ import dev.superficialcake.dankhelper.util.RewardsWebhook
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import me.shedaniel.autoconfig.AutoConfig
-import net.minecraft.client.Minecraft
-import net.minecraft.network.chat.Component
+import net.minecraft.client.MinecraftClient
+import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
 object MessageHandler {
@@ -20,7 +20,7 @@ object MessageHandler {
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
     private val ARTIFACT_PATTERN =
-        """^(\(Mining\)|\(Fishing\)|\(AutoMiner\)|\(OverDrive\)).*? (\d+)x (?!Random)(.*?) (Artifact)"""
+        """(?:(?:\((?:Mining|Fishing|AutoMiner|OverDrive)\)\s*(?:[Ff]ound\s*)?)|(?:-\s*))(\d+)x (?!Random)(.*?)\sArtifact(?:\s\(.*?\))?$"""
             .toRegex(RegexOption.IGNORE_CASE)
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private val REWARDS_PATTERN = """.* has (Mined|Fished) ([\d]+)x (.*)""".toRegex()
@@ -30,17 +30,12 @@ object MessageHandler {
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
 
-    private val username =
-        Minecraft
-            .getInstance()
-            .player
-            ?.displayName
-            .toString()
-    private val uuid = Minecraft.getInstance().gameProfile.id
+    private val username = MinecraftClient.getInstance().session.username
+    private val uuid = MinecraftClient.getInstance().gameProfile.id
     private val strippedUUID = uuid.toString().replace("-", "")
 
     fun onGameMessage(
-        message: Component,
+        message: Text,
         overlay: Boolean,
     ) {
         val text = message.string
@@ -85,7 +80,7 @@ object MessageHandler {
 
             text.contains("Artifact") -> {
                 val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
-                val (_, amount) = matchArtifact.destructured
+                val (amount) = matchArtifact.destructured
 
                 StatsManager.addArtifact(amount.toLong())
                 logger.info("Found ${StatsManager.sumArtifact} this session")
