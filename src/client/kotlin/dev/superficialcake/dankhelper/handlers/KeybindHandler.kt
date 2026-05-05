@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import dev.superficialcake.dankhelper.DankHelper
 import dev.superficialcake.dankhelper.compat.buildConfigScreen
 import dev.superficialcake.dankhelper.ui.EditHud
+import dev.superficialcake.dankhelper.ui.TrendsScreen
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping
@@ -21,6 +22,7 @@ object KeybindHandler {
     lateinit var resetSessionKey: KeyMapping
     lateinit var moveUIKey: KeyMapping
     lateinit var clothConfigKey: KeyMapping
+    lateinit var trendsUIKey: KeyMapping
 
     var showUI: Boolean = true
 
@@ -64,6 +66,16 @@ object KeybindHandler {
                 ),
             )
 
+        trendsUIKey =
+            registerKeyMapping(
+                KeyMapping(
+                    "key.dankhelper.openTrendsScreen",
+                    InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_PAGE_DOWN,
+                    CATEGORY,
+                ),
+            )
+
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.consumeClick()) {
@@ -79,6 +91,11 @@ object KeybindHandler {
                 }
                 while (clothConfigKey.consumeClick()) {
                     client.setScreen(buildConfigScreen(client.screen))
+                }
+                while (trendsUIKey.consumeClick()) {
+                    if (client.screen == null) {
+                        client.setScreen(TrendsScreen())
+                    }
                 }
             },
         )
