@@ -20,6 +20,7 @@ object DankHud {
         val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
         val translatedFortune = Text.translatable("text.hud.dankhelper.fortune").string
         val translatedMomentum = Text.translatable("text.hud.dankhelper.momentum").string
+        val translatedArtifacts = Text.translatable("text.hud.dankhelper.artifacts").string
 
         val client = MinecraftClient.getInstance()
         if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
@@ -47,7 +48,7 @@ object DankHud {
         if (config.showKPM) lines.add("§6§lKPM: §r${StatsManager.avgKpm}")
 
         if ((config.showMPM || config.showTPM || config.showCPM || config.showKPM) &&
-            (config.showSPM || config.showBPM || config.showBM || config.showFortune || config.showMomentum || config.showSunriseTime)
+            (config.showSPM || config.showBPM || config.showBM || config.showFortune || config.showMomentum || config.showArtifacts)
         ) {
             lines.add("§7=================")
         }
@@ -62,6 +63,9 @@ object DankHud {
         if (config.showMomentum) {
             val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
             lines.add("$translatedMomentum §r$formattedMomentum")
+        }
+        if (config.showArtifacts) {
+            lines.add("$translatedArtifacts §r${StatsManager.sumArtifact}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
