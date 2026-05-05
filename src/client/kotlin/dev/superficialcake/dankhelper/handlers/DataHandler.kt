@@ -1,14 +1,17 @@
 package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.util.UtilFunctions
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.Minecraft
+import org.slf4j.LoggerFactory
 import java.io.File
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 object DataHandler {
     private val gameDir: File = Minecraft.getInstance().gameDirectory
+    private val logger = LoggerFactory.getLogger("DankHelper-DataHandler")
 
     private val rootFolder: File = File(gameDir, "dankhelper")
     private val sessionsFolder: File = File(rootFolder, "sessions")
@@ -17,45 +20,58 @@ object DataHandler {
     private lateinit var currentSessionFile: File
     private lateinit var currentCFFile: File
 
+    private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss")
+
+    private fun getUtcDateTime(): ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC)
+
+    private fun getUtcDateString(): String = getUtcDateTime().format(DATE_FORMATTER)
+
     fun init() {
         if (!rootFolder.exists()) rootFolder.mkdirs()
         if (!sessionsFolder.exists()) sessionsFolder.mkdirs()
 
         prepareSessionFile()
+        registerMidnightRollover()
+    }
+
+    private fun registerMidnightRollover() {
+        var lastRecordedDate = getUtcDateString()
+        var tickCounter = 0
+
+        ClientTickEvents.END_CLIENT_TICK.register { _ ->
+            tickCounter++
+            if (tickCounter < 20) return@register
+            tickCounter = 0
+
+            val currentDate = getUtcDateString()
+            if (currentDate != lastRecordedDate) {
+                lastRecordedDate = currentDate
+                prepareSessionFile()
+                logger.info("Date rolled over to $currentDate. Started new session file.")
+            }
+        }
     }
 
     private fun prepareSessionFile() {
-        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val dateString = getUtcDateString()
+        var sessionIndex = 1
+        while (File(sessionsFolder, "$dateString-$sessionIndex.csv").exists()) sessionIndex++
 
-        var sessionNum = 1
-
-        while (File(sessionsFolder, "$date-$sessionNum.csv").exists()) {
-            sessionNum++
-        }
-
-        currentSessionFile = File(sessionsFolder, "$date-$sessionNum.csv")
-
-        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n"
-        currentSessionFile.writeText(header)
+        currentSessionFile = File(sessionsFolder, "$dateString-$sessionIndex.csv")
+        currentSessionFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,BlocksMined,Fortune,Momentum,Artifacts\n")
     }
 
     fun prepareCFFile() {
         val cfFolder = File(frenzyRoot, "champion")
-        if (!cfFolder.exists()) cfFolder.mkdirs() // Ensure the folder exists
+        if (!cfFolder.exists()) cfFolder.mkdirs()
 
-        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val date = getUtcDateString()
         var cfNum = 1
+        while (File(cfFolder, "$date-$cfNum.csv").exists()) cfNum++
 
-        while (File(cfFolder, "$date-$cfNum.csv").exists()) {
-            cfNum++
-        }
-
-        // 2. Fixed unresolved 'sessionNum' to 'cfNum'
         currentCFFile = File(cfFolder, "$date-$cfNum.csv")
-
-        val header = "Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum\n"
-        // 3. Fixed targeting currentSessionFile to currentCFFile
-        currentCFFile.writeText(header)
+        currentCFFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,SessionBM,Fortune,Momentum,Artifacts\n")
     }
 
     fun saveFrenzy(
@@ -66,22 +82,20 @@ object DataHandler {
         val folder = File(frenzyRoot, type)
         if (!folder.exists()) folder.mkdirs()
 
-        val date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val date = getUtcDateString()
+        val timestamp = getUtcDateTime().format(TIME_FORMATTER)
         var num = 1
-        val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-
-        while (File(folder, "${type.uppercase()}-$date-summary-$num.csv").exists()) {
-            num++
-        }
+        while (File(folder, "${type.uppercase()}-$date-summary-$num.csv").exists()) num++
 
         val file = File(folder, "${type.uppercase()}-$date-summary-$num.csv")
-        val content = "Timestamp,${header}\n$timestamp,$data\n"
-
         try {
-            file.writeText(content)
-            UtilFunctions.showToast("Frenzy Saved", "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/")
+            file.writeText("Timestamp,$header\n$timestamp,$data\n")
+            UtilFunctions.showToast(
+                "Frenzy Saved",
+                "Saved ${type.replaceFirstChar { it.uppercase() }} to .minecraft/dankhelper/$type/",
+            )
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Failed to log", e)
         }
     }
 
@@ -94,19 +108,18 @@ object DataHandler {
         swings: Long,
         sessionBM: Long,
         fortune: Long,
-        momentum: Long = 0L,
-        isCF: Boolean = false,
+        momentum: Long,
+        artifacts: Long,
+        isCF: Boolean,
     ) {
-        val timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-
-        val row = "$timestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum"
-
+        val utcTimestamp = getUtcDateTime().format(TIME_FORMATTER)
+        val csvRow = "$utcTimestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum,$artifacts"
         val targetFile = if (isCF) currentCFFile else currentSessionFile
 
         try {
-            targetFile.appendText("$row\n")
+            targetFile.appendText("$csvRow\n")
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Failed to append stats to CSV", e)
         }
     }
 }
