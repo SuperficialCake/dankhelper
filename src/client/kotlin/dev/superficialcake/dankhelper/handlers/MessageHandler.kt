@@ -1,9 +1,11 @@
 package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.config.DankConfig
+import dev.superficialcake.dankhelper.util.RewardsWebhook
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import me.shedaniel.autoconfig.AutoConfig
+import net.minecraft.client.MinecraftClient
 import net.minecraft.text.Text
 import org.slf4j.LoggerFactory
 
@@ -17,12 +19,20 @@ object MessageHandler {
             .toRegex()
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
+    private val ARTIFACT_PATTERN =
+        """^(\(Mining\)|\(Fishing\)|\(AutoMiner\)|\(OverDrive\)).*? (\d+)x (?!Random)(.*?) (Artifact)"""
+            .toRegex(RegexOption.IGNORE_CASE)
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
+    private val REWARDS_PATTERN = """.* has (Mined|Fished) ([\d]+)x (.*)""".toRegex()
     private var inCF: Boolean = false
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
     private val config get() = configHolder.config
 
     private val logger = LoggerFactory.getLogger("dankhelper-chat")
+
+    private val username = MinecraftClient.getInstance().session.username
+    private val uuid = MinecraftClient.getInstance().gameProfile.id
+    private val strippedUUID = uuid.toString().replace("-", "")
 
     fun onGameMessage(
         message: Text,
@@ -68,12 +78,29 @@ object MessageHandler {
                 logger.info("Fortune increased to ${StatsManager.sumFortune}")
             }
 
+            text.contains("Artifact") -> {
+                val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
+                val (_, amount) = matchArtifact.destructured
+
+                StatsManager.addArtifact(amount.toLong())
+                logger.info("Found ${StatsManager.sumArtifact} this session")
+            }
+
             text.contains("Increased Momentum") -> {
                 val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
                 val (_, amount) = matchMomentum.destructured
 
                 StatsManager.addMomentum(amount.toLong())
                 logger.info("Momentum increased to ${StatsManager.sumMomentum}")
+            }
+
+            text.contains(username) -> {
+                val matchRewards = REWARDS_PATTERN.find(text) ?: return
+
+                val (action, amount, reward) = matchRewards.destructured
+                if (config.webhookURL.isNotBlank()) {
+                    RewardsWebhook.sendReward(username, strippedUUID, action, amount, reward)
+                }
             }
 
             text.startsWith("(ChampionFrenzy) You've earned") -> {
