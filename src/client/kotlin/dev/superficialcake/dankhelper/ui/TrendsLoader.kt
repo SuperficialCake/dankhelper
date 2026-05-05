@@ -1,6 +1,5 @@
 package dev.superficialcake.dankhelper.ui
 
-import com.mojang.authlib.minecraft.client.MinecraftClient
 import net.minecraft.client.Minecraft
 import java.io.File
 import java.math.BigDecimal
