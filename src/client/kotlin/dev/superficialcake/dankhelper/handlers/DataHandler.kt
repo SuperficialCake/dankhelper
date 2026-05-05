@@ -33,7 +33,6 @@ object DataHandler {
 
         prepareSessionFile()
         registerMidnightRollover()
-        prepareCFFile()
     }
 
     private fun registerMidnightRollover() {

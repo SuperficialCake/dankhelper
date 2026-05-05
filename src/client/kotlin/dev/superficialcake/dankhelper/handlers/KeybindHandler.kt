@@ -2,6 +2,7 @@ package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
+import dev.superficialcake.dankhelper.ui.TrendsScreen
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -17,6 +18,7 @@ object KeybindHandler {
     lateinit var resetSessionKey: KeyBinding
     lateinit var moveUIKey: KeyBinding
     lateinit var clothConfigKey: KeyBinding
+    lateinit var trendsUIKey: KeyBinding
 
     var showUI: Boolean = true
 
@@ -61,6 +63,16 @@ object KeybindHandler {
                 ),
             )
 
+        trendsUIKey =
+            registerKeyBinding(
+                KeyBinding(
+                    "key.dankhelper.openTrendsScreen",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_PAGE_DOWN,
+                    CATEGORY,
+                ),
+            )
+
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.wasPressed()) {
@@ -78,6 +90,11 @@ object KeybindHandler {
                     client.setScreen(
                         AutoConfig.getConfigScreen(DankConfig::class.java, client.currentScreen).get(),
                     )
+                }
+                while (trendsUIKey.wasPressed()) {
+                    if (client.currentScreen == null) {
+                        client.setScreen(TrendsScreen())
+                    }
                 }
             },
         )
