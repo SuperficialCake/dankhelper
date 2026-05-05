@@ -7,6 +7,7 @@
   "key.dankhelper.resetSessionStats": "Reset Session Stats",
   "text.autoconfig.dankhelper.option.hudX": "X Position",
   "text.autoconfig.dankhelper.option.hudY": "Y Position",
+  "text.autoconfig.dankhelper.option.webhookURL": "Webhook URL (Blank to not use)",
   "text.autoconfig.dankhelper.option.showSessionTime": "Show Session Time",
   "text.autoconfig.dankhelper.option.showSunriseTime": "Show Sunrise Time Change",
   "text.autoconfig.dankhelper.option.showMPM": "Show Money Per Minute",
