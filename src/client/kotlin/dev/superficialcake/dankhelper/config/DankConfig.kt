@@ -9,6 +9,9 @@ class DankConfig : ConfigData {
     var hudX: Int = 10
     var hudY: Int = 60
 
+    // Webhook
+    var webhookURL: String = ""
+
     // Toggles
     var showSessionTime: Boolean = true
     var showSunriseTime: Boolean = true
@@ -22,6 +25,7 @@ class DankConfig : ConfigData {
     var showBM: Boolean = true
     var showFortune: Boolean = true
     var showMomentum: Boolean = true
+    var showArtifacts: Boolean = false
 
     // Graph Toggles
     var showMoneyGraph: Boolean = true
