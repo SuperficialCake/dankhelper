@@ -48,6 +48,7 @@ object StatsManager {
         sumFortune = 0L
         sumMomentum = 0L
         sumSpentMoney = BigDecimal.ZERO
+        sumArtifact = 0L
 
         moneyHistory.clear()
         spentHistory.clear()
