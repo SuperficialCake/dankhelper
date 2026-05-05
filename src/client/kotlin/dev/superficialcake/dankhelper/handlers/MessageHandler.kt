@@ -19,7 +19,9 @@ object MessageHandler {
             .toRegex()
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
-    private val ARTIFACT_PATTERN = """^(?!\(COpen\)).*? (\d+)x (?!Random)(.*?) (Artifact)""".toRegex()
+    private val ARTIFACT_PATTERN =
+        """^(\(Mining\)|\(Fishing\)|\(AutoMiner\)|\(OverDrive\)).*? (\d+)x (?!Random)(.*?) (Artifact)"""
+            .toRegex(RegexOption.IGNORE_CASE)
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private val REWARDS_PATTERN = """.* has (Mined|Fished) ([\d]+)x (.*)""".toRegex()
     private var inCF: Boolean = false
@@ -78,7 +80,7 @@ object MessageHandler {
 
             text.contains("Artifact") -> {
                 val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
-                val (amount, _) = matchArtifact.destructured
+                val (_, amount) = matchArtifact.destructured
 
                 StatsManager.addArtifact(amount.toLong())
                 logger.info("Found ${StatsManager.sumArtifact} this session")
