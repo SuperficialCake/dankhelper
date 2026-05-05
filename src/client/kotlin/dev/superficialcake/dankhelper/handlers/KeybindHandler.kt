@@ -1,6 +1,5 @@
 package dev.superficialcake.dankhelper.handlers
 
-import dev.superficialcake.dankhelper.DankHelper
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
 import dev.superficialcake.dankhelper.ui.TrendsScreen
@@ -10,7 +9,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding
 import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.util.InputUtil
-import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
 
 object KeybindHandler {
@@ -74,7 +72,7 @@ object KeybindHandler {
                     "key.dankhelper.openTrendsScreen",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_PAGE_DOWN,
-                    CATEGORY,
+                    "category.dankhelper",
                 ),
             )
 
