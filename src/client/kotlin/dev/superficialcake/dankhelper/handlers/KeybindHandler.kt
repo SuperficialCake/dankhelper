@@ -27,7 +27,7 @@ object KeybindHandler {
                     "key.dankhelper.resetSessionStats",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_END,
-                    "category.dankhelper",
+                    "key.categories.dankhelper",
                 ),
             )
 
@@ -37,17 +37,17 @@ object KeybindHandler {
                     "key.dankhelper.hideUI",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
-                    "category.dankhelper",
+                    "key.categories.dankhelper",
                 ),
             )
 
         moveUIKey =
             registerKeyBinding(
                 KeyBinding(
-                    "key.dankhelper.moveUi",
+                    "key.dankhelper.moveUI",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_COMMA,
-                    "category.dankhelper",
+                    "key.categories.dankhelper",
                 ),
             )
 
@@ -57,7 +57,7 @@ object KeybindHandler {
                     "key.dankhelper.openConfig",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_BACKSLASH,
-                    "category.dankhelper",
+                    "key.categories.dankhelper",
                 ),
             )
 
@@ -67,7 +67,7 @@ object KeybindHandler {
                     "key.dankhelper.openTrendsScreen",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_PAGE_DOWN,
-                    "category.dankhelper",
+                    "key.categories.dankhelper",
                 ),
             )
 
