@@ -6,128 +6,73 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
 
 object TrendsLoader {
     private val dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    // Sessions
+    // Normal mining
 
-    fun loadSessions(): List<DayStats> {
-        val sessionsFolder = folder("sessions") ?: return emptyList()
+    fun loadTrends(): List<DayStats> {
+        val trendsFolder = folder("logs") ?: return emptyList()
 
-        sessionsFolder.listFiles { f -> f.extension == "csv" }?.forEach { csvFile ->
-            val hasData =
-                runCatching { csvFile.readLines() }
-                    .getOrElse { emptyList() }
-                    .drop(1)
-                    .any { it.isNotBlank() }
+        trendsFolder.listFiles { f -> f.extension == "csv" }?.forEach { csvFile ->
+            val hasData = runCatching { csvFile.readLines() }
+                .getOrElse { emptyList() }
+                .drop(1)
+                .any { it.isNotBlank() }
             if (!hasData) runCatching { csvFile.delete() }
         }
 
-        val remaining = sessionsFolder.listFiles { f -> f.extension == "csv" } ?: return emptyList()
-        val byDate = mutableMapOf<LocalDate, MutableList<File>>()
+        val remaining = trendsFolder.listFiles { f -> f.extension == "csv" } ?: return emptyList()
 
-        for (csvFile in remaining) {
-            runCatching {
-                LocalDate.parse(csvFile.nameWithoutExtension.substringBeforeLast("-"), dateFmt)
-            }.onSuccess { date ->
-                byDate.getOrPut(date) { mutableListOf() }.add(csvFile)
+        return remaining
+            .mapNotNull { csvFile ->
+                runCatching {
+                    LocalDate.parse(csvFile.nameWithoutExtension, dateFmt)
+                }.getOrNull()?.let { date -> aggregateDay(date, csvFile) }
             }
-        }
-
-        return byDate.entries
-            .sortedByDescending { it.key }
-            .map { (date, files) -> aggregateSessionDay(date, files) }
+            .sortedByDescending { it.date }
     }
 
-    private data class SessionRow(
-        val money: BigDecimal,
-        val tokens: Long,
-        val crates: Long,
-        val keys: Long,
-        val blocks: Long,
-        val swings: Long,
-        val momentum: Long,
-        val artifact: Long,
-    )
-
-    private fun aggregateSessionDay(
-        date: LocalDate,
-        files: List<File>,
-    ): DayStats {
-        val rows = mutableListOf<SessionRow>()
-
-        for (csvFile in files) {
-            for (line in readDataLines(csvFile)) {
-                val columns = line.split(",")
-                if (columns.size < 7) continue
-                val money = columns[1].toBigDecimalOrNull() ?: continue
-                val momentum = if (columns.size > 9) columns[9].toLongOrNull() ?: 0L else 0L
-                val artifact = if (columns.size > 10) columns[10].toLongOrNull() ?: 0L else 0L
-                rows.add(
-                    SessionRow(
-                        money = money,
-                        tokens = columns[2].toLongOrNull() ?: 0L,
-                        crates = columns[3].toLongOrNull() ?: 0L,
-                        keys = columns[4].toLongOrNull() ?: 0L,
-                        blocks = columns[5].toLongOrNull() ?: 0L,
-                        swings = columns[6].toLongOrNull() ?: 0L,
-                        momentum = momentum,
-                        artifact = artifact,
-                    ),
-                )
-            }
-        }
-
+    private fun aggregateDay(date: LocalDate, csvFile: File): DayStats {
         var totalMoney = BigDecimal.ZERO
         var totalTokens = 0L
         var totalCrates = 0L
         var totalKeys = 0L
         var totalBlocks = 0L
         var totalSwings = 0L
-
-        // New variables to hold the sum of the "final" values from each session
         var totalMomentum = 0L
         var totalArtifact = 0L
-
         var minuteCount = 0
         val moneyTimeline = mutableListOf<Double>()
         val tokenTimeline = mutableListOf<Double>()
 
-        for (csvFile in files) {
-            val fileLines = readDataLines(csvFile)
-            if (fileLines.isEmpty()) continue
+        val fileLines = readDataLines(csvFile)
 
-            for (line in fileLines) {
-                val columns = line.split(",")
-                if (columns.size < 7) continue
+        for (line in fileLines) {
+            val columns = line.split(",")
+            if (columns.size < 7) continue
+            val money = columns[1].toBigDecimalOrNull() ?: continue
+            totalMoney += money
+            totalTokens += columns[2].toLongOrNull() ?: 0L
+            totalCrates += columns[3].toLongOrNull() ?: 0L
+            totalKeys += columns[4].toLongOrNull() ?: 0L
+            totalBlocks += columns[5].toLongOrNull() ?: 0L
+            totalSwings += columns[6].toLongOrNull() ?: 0L
+            minuteCount++
+            moneyTimeline.add(money.toDouble())
+            tokenTimeline.add(columns[2].toDoubleOrNull() ?: 0.0)
+        }
 
-                val money = columns[1].toBigDecimalOrNull() ?: continue
-                totalMoney += money
-                totalTokens += columns[2].toLongOrNull() ?: 0L
-                totalCrates += columns[3].toLongOrNull() ?: 0L
-                totalKeys += columns[4].toLongOrNull() ?: 0L
-                totalBlocks += columns[5].toLongOrNull() ?: 0L
-                totalSwings += columns[6].toLongOrNull() ?: 0L
-
-                minuteCount++
-                moneyTimeline.add(money.toDouble())
-                tokenTimeline.add(columns[2].toDoubleOrNull() ?: 0.0)
-            }
-
-            val lastLine = fileLines.lastOrNull()?.split(",")
-            if (lastLine != null && lastLine.size >= 11) {
-                val sessionFinalMomentum = lastLine[9].toLongOrNull() ?: 0L
-                val sessionFinalArtifact = lastLine[10].toLongOrNull() ?: 0L
-
-                totalMomentum += sessionFinalMomentum
-                totalArtifact += sessionFinalArtifact
-            }
+        val lastLine = fileLines.lastOrNull()?.split(",")
+        if (lastLine != null && lastLine.size >= 11) {
+            totalMomentum = lastLine[9].toLongOrNull() ?: 0L
+            totalArtifact = lastLine[10].toLongOrNull() ?: 0L
         }
 
         return DayStats(
             date = date,
-            sessions = files.size,
             totalMoney = totalMoney,
             totalTokens = totalTokens,
             totalCrates = totalCrates,
@@ -135,11 +80,74 @@ object TrendsLoader {
             totalBlocks = totalBlocks,
             totalSwings = totalSwings,
             minuteCount = minuteCount,
-            totalMomentum = totalMomentum, // Sum of all final session values
-            totalArtifact = totalArtifact, // Sum of all final session values
+            totalMomentum = totalMomentum,
+            totalArtifact = totalArtifact,
             moneyTimeline = moneyTimeline,
             tokenTimeline = tokenTimeline,
         )
+    }
+
+
+
+
+    // Weekly / Monthly aggregates
+
+    fun loadWeeklyTrends(allDays: List<DayStats>): List<WeekStats> {
+        if (allDays.isEmpty()) return emptyList()
+
+        val isoWeekYear = WeekFields.ISO.weekBasedYear()
+        val isoWeekNum = WeekFields.ISO.weekOfWeekBasedYear()
+
+        return allDays
+            .groupBy { it.date.get(isoWeekYear) * 100 + it.date.get(isoWeekNum) }
+            .map { (_, days) ->
+                val sorted = days.sortedBy { it.date }
+                val anyDay = sorted.first().date
+                WeekStats(
+                    weekStart = anyDay.with(WeekFields.ISO.dayOfWeek(), 1),
+                    weekEnd = anyDay.with(WeekFields.ISO.dayOfWeek(), 7),
+                    days = sorted,
+                    totalMoney = sorted.fold(BigDecimal.ZERO) { acc, d -> acc + d.totalMoney },
+                    totalTokens = sorted.sumOf { it.totalTokens },
+                    totalCrates = sorted.sumOf { it.totalCrates },
+                    totalKeys = sorted.sumOf { it.totalKeys },
+                    totalBlocks = sorted.sumOf { it.totalBlocks },
+                    totalSwings = sorted.sumOf { it.totalSwings },
+                    minuteCount = sorted.sumOf { it.minuteCount },
+                    totalMomentum = sorted.sumOf { it.totalMomentum },
+                    totalArtifact = sorted.sumOf { it.totalArtifact },
+                    moneyTimeline = sorted.flatMap { it.moneyTimeline },
+                    tokenTimeline = sorted.flatMap { it.tokenTimeline },
+                )
+            }
+            .sortedByDescending { it.weekStart }
+    }
+
+    fun loadMonthlyTrends(allDays: List<DayStats>): List<MonthStats> {
+        if (allDays.isEmpty()) return emptyList()
+
+        return allDays
+            .groupBy { it.date.year * 100 + it.date.monthValue }
+            .map { (_, days) ->
+                val sorted = days.sortedBy { it.date }
+                MonthStats(
+                    year = sorted.first().date.year,
+                    month = sorted.first().date.monthValue,
+                    days = sorted,
+                    totalMoney = sorted.fold(BigDecimal.ZERO) { acc, d -> acc + d.totalMoney },
+                    totalTokens = sorted.sumOf { it.totalTokens },
+                    totalCrates = sorted.sumOf { it.totalCrates },
+                    totalKeys = sorted.sumOf { it.totalKeys },
+                    totalBlocks = sorted.sumOf { it.totalBlocks },
+                    totalSwings = sorted.sumOf { it.totalSwings },
+                    minuteCount = sorted.sumOf { it.minuteCount },
+                    totalMomentum = sorted.sumOf { it.totalMomentum },
+                    totalArtifact = sorted.sumOf { it.totalArtifact },
+                    moneyTimeline = sorted.flatMap { it.moneyTimeline },
+                    tokenTimeline = sorted.flatMap { it.tokenTimeline },
+                )
+            }
+            .sortedByDescending { it.year * 100 + it.month }
     }
 
     // Champion Frenzies
