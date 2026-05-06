@@ -8,11 +8,19 @@ This project is a community driven tool and is not officially endorsed by or aff
 
 ## Features
 
-This mod adds a HUD to show helpful stats related to DankPrison. The mod will also log your ChampionFrenzies and FishingFrenzies.
+This mod adds a HUD to show helpful stats related to DankPrison. The hud tracks things, such as, Sunrise time, Income Per Minute, Total Artifacts, and more!
 
-![Preview of In-Game UI](./resources/images/preview.png)
+![Preview of In-Game UI](./previews/HUD%20Previeww.png)
 
 Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in `.minecraft/dankhelper/frenzies/<frenzy_type>`.
+
+You can view these CSVs in-game using `PG Down`
+
+![Preview of Trends Sscreen](./previews/Trends%20Screen%20Preview.png)
+
+You can also send your rewards to a discord webhook, just like the #rewards channel in the DankPrison discord!
+
+![Preview of Discord Webhook](./previews/Webhook%20Preview.png)
 
 ### Default Keybinds
 
@@ -25,6 +33,8 @@ The mod has a few keybinids:
 > Backslash to open the config
 > 
 > Comma to move the UI
+> 
+> PG_DOWN to open the Trends screen
 
 ## How It Works
 
