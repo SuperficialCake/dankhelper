@@ -73,7 +73,9 @@ Feel free to contribute to the project. Please make an issue for any major chang
 
 ## Contributors
 
-@PepeNeutron
+[PepeNeutron](https://github.com/PepeNeutron)
+
+[YouAreACatgirl](https://github.com/tomdkap)
 
 @tomdkap
 
