@@ -582,14 +582,32 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
             )
         val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
         for ((i, metric) in metrics.withIndex()) {
-            renderStatCard(context, x + i * (cardWidth + buttonGap), cardsY, cardWidth, cardHeight, metric.first, metric.second, metric.third)
+            renderStatCard(
+                context,
+                x + i * (cardWidth + buttonGap),
+                cardsY,
+                cardWidth,
+                cardHeight,
+                metric.first,
+                metric.second,
+                metric.third,
+            )
         }
 
         val extraCardsY = cardsY + cardHeight + buttonGap
         val extraCardsHeight = 31
         val halfCardWidth = (contentWidth - buttonGap) / 2
         renderStatCard(context, x, extraCardsY, halfCardWidth, extraCardsHeight, "§9§lMomentum", fmtLong(week.totalMomentum), momentumColor)
-        renderStatCard(context, x + halfCardWidth + buttonGap, extraCardsY, contentWidth - halfCardWidth - buttonGap, extraCardsHeight, "§e§lArtifacts", fmtLong(week.totalArtifact), artifactColor)
+        renderStatCard(
+            context,
+            x + halfCardWidth + buttonGap,
+            extraCardsY,
+            contentWidth - halfCardWidth - buttonGap,
+            extraCardsHeight,
+            "§e§lArtifacts",
+            fmtLong(week.totalArtifact),
+            artifactColor,
+        )
 
         val graphsY = extraCardsY + extraCardsHeight + pad
         val graphHeight = h - (graphsY - y) - pad
@@ -662,14 +680,41 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
             )
         val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
         for ((i, metric) in metrics.withIndex()) {
-            renderStatCard(context, x + i * (cardWidth + buttonGap), cardsY, cardWidth, cardHeight, metric.first, metric.second, metric.third)
+            renderStatCard(
+                context,
+                x + i * (cardWidth + buttonGap),
+                cardsY,
+                cardWidth,
+                cardHeight,
+                metric.first,
+                metric.second,
+                metric.third,
+            )
         }
 
         val extraCardsY = cardsY + cardHeight + buttonGap
         val extraCardsHeight = 31
         val halfCardWidth = (contentWidth - buttonGap) / 2
-        renderStatCard(context, x, extraCardsY, halfCardWidth, extraCardsHeight, "§9§lMomentum", fmtLong(month.totalMomentum), momentumColor)
-        renderStatCard(context, x + halfCardWidth + buttonGap, extraCardsY, contentWidth - halfCardWidth - buttonGap, extraCardsHeight, "§e§lArtifacts", fmtLong(month.totalArtifact), artifactColor)
+        renderStatCard(
+            context,
+            x,
+            extraCardsY,
+            halfCardWidth,
+            extraCardsHeight,
+            "§9§lMomentum",
+            fmtLong(month.totalMomentum),
+            momentumColor,
+        )
+        renderStatCard(
+            context,
+            x + halfCardWidth + buttonGap,
+            extraCardsY,
+            contentWidth - halfCardWidth - buttonGap,
+            extraCardsHeight,
+            "§e§lArtifacts",
+            fmtLong(month.totalArtifact),
+            artifactColor,
+        )
 
         val graphsY = extraCardsY + extraCardsHeight + pad
         val graphHeight = h - (graphsY - y) - pad
