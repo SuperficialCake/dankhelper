@@ -75,7 +75,7 @@ object ScoreboardHandler {
                 }
 
                 if (currentTotalBM < lastSeenBM) {
-                    initialBM -= currentTotalBM
+                    initialBM -= lastSeenBM
                 }
 
                 lastSeenBM = currentTotalBM
