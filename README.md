@@ -24,7 +24,7 @@ You can also send your rewards to a discord webhook, just like the #rewards chan
 
 ### Default Keybinds
 
-The mod has a few keybinids:
+The mod has a few keybinds:
 
 > END to manually end a session & reset the HUD.
 > 
@@ -59,9 +59,23 @@ Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=1.21.11)
 
 Download the latest jar from the [Releases Page](https://github.com/SuperficialCake/dankhelper/releases), or compile from source.
 
+## Compilation Instructions
+
+Download source for your Minecraft version
+
+run `./gradle build`
+
+JAR is output to `./build/libs/`
+
 ## Contribution
 
 Feel free to contribute to the project. Please make an issue for any major changes.
+
+## Contributors
+
+@PepeNeutron
+
+@tomdkap
 
 ## License
 [GNU GPL v3](https://choosealicense.com/licenses/gpl-3.0/)
