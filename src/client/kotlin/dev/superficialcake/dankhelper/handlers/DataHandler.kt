@@ -14,11 +14,12 @@ object DataHandler {
     private val logger = LoggerFactory.getLogger("DankHelper-DataHandler")
 
     private val rootFolder: File = File(gameDir, "dankhelper")
-    private val sessionsFolder: File = File(rootFolder, "sessions")
+    private val trendsFolder: File = File(rootFolder, "logs")
     private val frenzyRoot: File = File(rootFolder, "frenzies")
 
     private lateinit var currentSessionFile: File
     private lateinit var currentCFFile: File
+    private lateinit var currentDayFile: File
 
     private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss")
@@ -29,9 +30,10 @@ object DataHandler {
 
     fun init() {
         if (!rootFolder.exists()) rootFolder.mkdirs()
-        if (!sessionsFolder.exists()) sessionsFolder.mkdirs()
+        if (!trendsFolder.exists()) trendsFolder.mkdirs()
 
         prepareSessionFile()
+        prepareTrendFile()
         registerMidnightRollover()
     }
 
@@ -47,7 +49,7 @@ object DataHandler {
             val currentDate = getUtcDateString()
             if (currentDate != lastRecordedDate) {
                 lastRecordedDate = currentDate
-                prepareSessionFile()
+                prepareTrendFile()
                 logger.info("Date rolled over to $currentDate. Started new session file.")
                 UtilFunctions.resetAll()
             }
@@ -55,12 +57,17 @@ object DataHandler {
     }
 
     private fun prepareSessionFile() {
-        val dateString = getUtcDateString()
-        var sessionIndex = 1
-        while (File(sessionsFolder, "$dateString-$sessionIndex.csv").exists()) sessionIndex++
-
-        currentSessionFile = File(sessionsFolder, "$dateString-$sessionIndex.csv")
+        currentSessionFile = File(rootFolder, "session.csv")
         currentSessionFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,BlocksMined,Fortune,Momentum,Artifacts\n")
+    }
+
+    private fun prepareTrendFile() {
+        val dateString = getUtcDateString()
+
+        currentDayFile = File(trendsFolder, "$dateString.csv")
+        if (!currentDayFile.exists()) {
+            currentDayFile.writeText("Timestamp,Money,Tokens,Crates,Keys,Blocks,Swings,BlocksMined,Fortune,Momentum,Artifacts\n")
+        }
     }
 
     fun prepareCFFile() {
@@ -115,10 +122,14 @@ object DataHandler {
     ) {
         val utcTimestamp = getUtcDateTime().format(TIME_FORMATTER)
         val csvRow = "$utcTimestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum,$artifacts"
-        val targetFile = if (isCF) currentCFFile else currentSessionFile
 
         try {
-            targetFile.appendText("$csvRow\n")
+            if (isCF) {
+                currentCFFile.appendText("$csvRow\n")
+            } else {
+                currentSessionFile.appendText("$csvRow\n")
+                currentDayFile.appendText("$csvRow\n")
+            }
         } catch (e: Exception) {
             logger.error("Failed to append stats to CSV", e)
         }
