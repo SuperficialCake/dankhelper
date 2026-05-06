@@ -49,6 +49,7 @@ object DataHandler {
                 lastRecordedDate = currentDate
                 prepareSessionFile()
                 logger.info("Date rolled over to $currentDate. Started new session file.")
+                UtilFunctions.resetAll()
             }
         }
     }
