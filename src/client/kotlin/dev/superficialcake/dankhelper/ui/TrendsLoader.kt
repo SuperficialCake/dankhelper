@@ -17,10 +17,11 @@ object TrendsLoader {
         val trendsFolder = folder("logs") ?: return emptyList()
 
         trendsFolder.listFiles { f -> f.extension == "csv" }?.forEach { csvFile ->
-            val hasData = runCatching { csvFile.readLines() }
-                .getOrElse { emptyList() }
-                .drop(1)
-                .any { it.isNotBlank() }
+            val hasData =
+                runCatching { csvFile.readLines() }
+                    .getOrElse { emptyList() }
+                    .drop(1)
+                    .any { it.isNotBlank() }
             if (!hasData) runCatching { csvFile.delete() }
         }
 
@@ -31,11 +32,13 @@ object TrendsLoader {
                 runCatching {
                     LocalDate.parse(csvFile.nameWithoutExtension, dateFmt)
                 }.getOrNull()?.let { date -> aggregateDay(date, csvFile) }
-            }
-            .sortedByDescending { it.date }
+            }.sortedByDescending { it.date }
     }
 
-    private fun aggregateDay(date: LocalDate, csvFile: File): DayStats {
+    private fun aggregateDay(
+        date: LocalDate,
+        csvFile: File,
+    ): DayStats {
         var totalMoney = BigDecimal.ZERO
         var totalTokens = 0L
         var totalCrates = 0L
@@ -63,13 +66,15 @@ object TrendsLoader {
             minuteCount++
             moneyTimeline.add(money.toDouble())
             tokenTimeline.add(columns[2].toDoubleOrNull() ?: 0.0)
+            totalMomentum += columns[9].toLongOrNull() ?: 0L
+            totalArtifact += columns[10].toLongOrNull() ?: 0L
         }
 
-        val lastLine = fileLines.lastOrNull()?.split(",")
-        if (lastLine != null && lastLine.size >= 11) {
-            totalMomentum = lastLine[9].toLongOrNull() ?: 0L
-            totalArtifact = lastLine[10].toLongOrNull() ?: 0L
-        }
+//        val lastLine = fileLines.lastOrNull()?.split(",")
+//        if (lastLine != null && lastLine.size >= 11) {
+//            totalMomentum = lastLine[9].toLongOrNull() ?: 0L
+//            totalArtifact = lastLine[10].toLongOrNull() ?: 0L
+//        }
 
         return DayStats(
             date = date,
@@ -86,9 +91,6 @@ object TrendsLoader {
             tokenTimeline = tokenTimeline,
         )
     }
-
-
-
 
     // Weekly / Monthly aggregates
 
@@ -119,8 +121,7 @@ object TrendsLoader {
                     moneyTimeline = sorted.flatMap { it.moneyTimeline },
                     tokenTimeline = sorted.flatMap { it.tokenTimeline },
                 )
-            }
-            .sortedByDescending { it.weekStart }
+            }.sortedByDescending { it.weekStart }
     }
 
     fun loadMonthlyTrends(allDays: List<DayStats>): List<MonthStats> {
@@ -146,8 +147,7 @@ object TrendsLoader {
                     moneyTimeline = sorted.flatMap { it.moneyTimeline },
                     tokenTimeline = sorted.flatMap { it.tokenTimeline },
                 )
-            }
-            .sortedByDescending { it.year * 100 + it.month }
+            }.sortedByDescending { it.year * 100 + it.month }
     }
 
     // Champion Frenzies
