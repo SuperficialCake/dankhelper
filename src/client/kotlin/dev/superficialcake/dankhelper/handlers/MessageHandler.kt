@@ -20,10 +20,10 @@ object MessageHandler {
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
     private val ARTIFACT_PATTERN =
-        """^(\(Mining\)|\(Fishing\)|\(AutoMiner\)|\(OverDrive\)).*? (\d+)x (?!Random)(.*?) (Artifact)"""
+        """^(?:\((?:Mining|Fishing|Auto-Miner|OverDrive)\)\s*(?:Found:?\s*)?|(?:\s*-\s*))(\d+)x (?!Random)(.*?)\sArtifact(?:\s\(.*?\))?$"""
             .toRegex(RegexOption.IGNORE_CASE)
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
-    private val REWARDS_PATTERN = """.* has (Mined|Fished) ([\d]+)x (.*)""".toRegex()
+    private val REWARDS_PATTERN = """.* (Mined|Fished) ([\d]+)x (.*)""".toRegex()
     private var inCF: Boolean = false
     private val configHolder = AutoConfig.getConfigHolder(DankConfig::class.java)
     private val config get() = configHolder.config

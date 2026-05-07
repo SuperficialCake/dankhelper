@@ -16,12 +16,16 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val label: String,
     ) {
         SESSIONS("Mining Sessions"),
+        WEEKLY("Weekly"),
+        MONTHLY("Monthly"),
         CHAMPION("Champion Frenzies"),
         FISHING("Fishing Frenzies"),
     }
 
     private var currentTab = Tab.SESSIONS
     private var days: List<DayStats> = emptyList()
+    private var weeks: List<WeekStats> = emptyList()
+    private var months: List<MonthStats> = emptyList()
     private var cfEntries: List<CfEntry> = emptyList()
     private var ffEntries: List<FfEntry> = emptyList()
     private var selectedIndex = 0
@@ -63,7 +67,9 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
 
     override fun init() {
         super.init()
-        days = TrendsLoader.loadSessions()
+        days = TrendsLoader.loadTrends()
+        weeks = TrendsLoader.loadWeeklyTrends(days)
+        months = TrendsLoader.loadMonthlyTrends(days)
         cfEntries = TrendsLoader.loadChampionFrenzies()
         ffEntries = TrendsLoader.loadFishingFrenzies()
         resetPicker()
@@ -106,6 +112,22 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
                 }
             }
 
+            Tab.WEEKLY -> {
+                if (weeks.isEmpty()) {
+                    renderEmpty(graphics, width, contentY, contentHeight)
+                } else {
+                    renderWeekDetail(graphics, weeks[selectedIndex], width, contentY, contentHeight)
+                }
+            }
+
+            Tab.MONTHLY -> {
+                if (months.isEmpty()) {
+                    renderEmpty(graphics, width, contentY, contentHeight)
+                } else {
+                    renderMonthDetail(graphics, months[selectedIndex], width, contentY, contentHeight)
+                }
+            }
+
             Tab.CHAMPION -> {
                 if (cfEntries.isEmpty()) {
                     renderEmpty(graphics, width, contentY, contentHeight)
@@ -143,7 +165,9 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val gameDir = minecraft.gameDirectory
         val subfolder =
             when (currentTab) {
-                Tab.SESSIONS -> "sessions"
+                Tab.SESSIONS -> "logs"
+                Tab.WEEKLY -> "logs"
+                Tab.MONTHLY -> "logs"
                 Tab.CHAMPION -> "frenzies/champion"
                 Tab.FISHING -> "frenzies/fishing"
             }
@@ -318,9 +342,19 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
                     when {
                         entry.date == utcToday -> "§aToday"
                         entry.date == utcToday.minusDays(1) -> "§7Yest."
-                        else -> "§8${entry.sessions} Sessions"
+                        else -> "§8${entry.minuteCount} min"
                     }
                 dateLabel to badge
+            }
+
+            is WeekStats -> {
+                val fmt = DateTimeFormatter.ofPattern("MM/dd")
+                "${entry.weekStart.format(fmt)}-${entry.weekEnd.format(fmt)}" to "§7${entry.days.size} day(s)"
+            }
+
+            is MonthStats -> {
+                val localDate = LocalDate.of(entry.year, entry.month, 1)
+                localDate.format(DateTimeFormatter.ofPattern("MMM")) to "§7${entry.year}"
             }
 
             is CfEntry -> {
@@ -339,6 +373,8 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
     private fun currentEntries(): List<Any> =
         when (currentTab) {
             Tab.SESSIONS -> days
+            Tab.WEEKLY -> weeks
+            Tab.MONTHLY -> months
             Tab.CHAMPION -> cfEntries
             Tab.FISHING -> ffEntries
         }
@@ -382,7 +418,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         )
         graphics.text(
             minecraft.font,
-            Component.literal("§7${day.sessions} session(s)  ·  ${day.minuteCount} samples"),
+            Component.literal("§7${day.minuteCount} samples"),
             x + 6,
             y + pad + 20,
             dimmedTextColor,
@@ -452,6 +488,221 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
 
         if (day.tokenTimeline.size >= 2) {
             renderGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, day.tokenTimeline, tokenColor, "Tokens / Minute")
+        } else {
+            renderEmptyGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
+        }
+    }
+
+    //  Weekly detail
+
+    private fun renderWeekDetail(
+        graphics: GuiGraphicsExtractor,
+        week: WeekStats,
+        screenWidth: Int,
+        y: Int,
+        h: Int,
+    ) {
+        val x = pad
+        val contentWidth = screenWidth - pad * 2
+        val summaryHeight = 36
+
+        graphics.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
+        drawBorder(graphics, x, y + pad, contentWidth, summaryHeight, borderColor)
+        val weekFmt = DateTimeFormatter.ofPattern("MMM d")
+        val weekEndFmt = DateTimeFormatter.ofPattern("MMM d, yyyy")
+        graphics.text(
+            minecraft.font,
+            "§f§lWeek of ${week.weekStart.format(weekFmt)} – ${week.weekEnd.format(weekEndFmt)}",
+            x + 6,
+            y + pad + 9,
+            textColor,
+        )
+        graphics.text(
+            minecraft.font,
+            "§7${week.days.size} day(s)  ·  ${week.minuteCount} samples",
+            x + 6,
+            y + pad + 20,
+            dimmedTextColor,
+        )
+        val totals =
+            "§aMoney: §f${UtilFunctions.formatNumber(week.totalMoney.toDouble())}" +
+                "   §bTokens: §f${fmtLong(week.totalTokens)}" +
+                "   §eBlocks: §f${fmtLong(week.totalBlocks)}"
+        graphics.text(
+            minecraft.font,
+            totals,
+            x + contentWidth - minecraft.font.width(totals) - pad,
+            y + pad + (summaryHeight - 9) / 2,
+            textColor,
+        )
+
+        val cardsY = y + pad + summaryHeight + pad
+        val cardHeight = 34
+        val metrics =
+            listOf(
+                Triple("§a§lMPM", UtilFunctions.formatNumber(week.avgMpm.toDouble()), moneyColor),
+                Triple("§b§lTPM", fmtLong(week.avgTpm), tokenColor),
+                Triple("§e§lCPM", fmtLong(week.avgCpm), crateColor),
+                Triple("§6§lKPM", fmtLong(week.avgKpm), keyColor),
+                Triple("§d§lSPM", fmtLong(week.avgSpm), swingColor),
+                Triple("§c§lBPM", fmtLong(week.avgBpm), bpmColor),
+            )
+        val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
+        for ((i, metric) in metrics.withIndex()) {
+            renderStatCard(
+                graphics,
+                x + i * (cardWidth + buttonGap),
+                cardsY,
+                cardWidth,
+                cardHeight,
+                metric.first,
+                metric.second,
+                metric.third,
+            )
+        }
+
+        val extraCardsY = cardsY + cardHeight + buttonGap
+        val extraCardsHeight = 31
+        val halfCardWidth = (contentWidth - buttonGap) / 2
+        renderStatCard(
+            graphics,
+            x,
+            extraCardsY,
+            halfCardWidth,
+            extraCardsHeight,
+            "§9§lMomentum",
+            fmtLong(week.totalMomentum),
+            momentumColor,
+        )
+        renderStatCard(
+            graphics,
+            x + halfCardWidth + buttonGap,
+            extraCardsY,
+            contentWidth - halfCardWidth - buttonGap,
+            extraCardsHeight,
+            "§e§lArtifacts",
+            fmtLong(week.totalArtifact),
+            artifactColor,
+        )
+
+        val graphsY = extraCardsY + extraCardsHeight + pad
+        val graphHeight = h - (graphsY - y) - pad
+        val halfWidth = (contentWidth - pad) / 2
+
+        if (week.moneyTimeline.size >= 2) {
+            renderGraph(graphics, x, graphsY, halfWidth, graphHeight, week.moneyTimeline, moneyColor, "Money / Minute")
+        } else {
+            renderEmptyGraph(graphics, x, graphsY, halfWidth, graphHeight, "Money / Minute")
+        }
+        if (week.tokenTimeline.size >= 2) {
+            renderGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, week.tokenTimeline, tokenColor, "Tokens / Minute")
+        } else {
+            renderEmptyGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
+        }
+    }
+
+    //  Monthly detail
+
+    private fun renderMonthDetail(
+        graphics: GuiGraphicsExtractor,
+        month: MonthStats,
+        screenWidth: Int,
+        y: Int,
+        h: Int,
+    ) {
+        val x = pad
+        val contentWidth = screenWidth - pad * 2
+        val summaryHeight = 36
+        val monthDate = LocalDate.of(month.year, month.month, 1)
+
+        graphics.fill(x, y + pad, x + contentWidth, y + pad + summaryHeight, panelColor)
+        drawBorder(graphics, x, y + pad, contentWidth, summaryHeight, borderColor)
+        graphics.text(
+            minecraft.font,
+            "§f§l${monthDate.format(DateTimeFormatter.ofPattern("MMMM yyyy"))}",
+            x + 6,
+            y + pad + 9,
+            textColor,
+        )
+        graphics.text(
+            minecraft.font,
+            "§7${month.days.size} day(s)  ·  ${month.minuteCount} samples",
+            x + 6,
+            y + pad + 20,
+            dimmedTextColor,
+        )
+        val totals =
+            "§aMoney: §f${UtilFunctions.formatNumber(month.totalMoney.toDouble())}" +
+                "   §bTokens: §f${fmtLong(month.totalTokens)}" +
+                "   §eBlocks: §f${fmtLong(month.totalBlocks)}"
+        graphics.text(
+            minecraft.font,
+            totals,
+            x + contentWidth - font.width(totals) - pad,
+            y + pad + (summaryHeight - 9) / 2,
+            textColor,
+        )
+
+        val cardsY = y + pad + summaryHeight + pad
+        val cardHeight = 34
+        val metrics =
+            listOf(
+                Triple("§a§lMPM", UtilFunctions.formatNumber(month.avgMpm.toDouble()), moneyColor),
+                Triple("§b§lTPM", fmtLong(month.avgTpm), tokenColor),
+                Triple("§e§lCPM", fmtLong(month.avgCpm), crateColor),
+                Triple("§6§lKPM", fmtLong(month.avgKpm), keyColor),
+                Triple("§d§lSPM", fmtLong(month.avgSpm), swingColor),
+                Triple("§c§lBPM", fmtLong(month.avgBpm), bpmColor),
+            )
+        val cardWidth = (contentWidth - (metrics.size - 1) * buttonGap) / metrics.size
+        for ((i, metric) in metrics.withIndex()) {
+            renderStatCard(
+                graphics,
+                x + i * (cardWidth + buttonGap),
+                cardsY,
+                cardWidth,
+                cardHeight,
+                metric.first,
+                metric.second,
+                metric.third,
+            )
+        }
+
+        val extraCardsY = cardsY + cardHeight + buttonGap
+        val extraCardsHeight = 31
+        val halfCardWidth = (contentWidth - buttonGap) / 2
+        renderStatCard(
+            graphics,
+            x,
+            extraCardsY,
+            halfCardWidth,
+            extraCardsHeight,
+            "§9§lMomentum",
+            fmtLong(month.totalMomentum),
+            momentumColor,
+        )
+        renderStatCard(
+            graphics,
+            x + halfCardWidth + buttonGap,
+            extraCardsY,
+            contentWidth - halfCardWidth - buttonGap,
+            extraCardsHeight,
+            "§e§lArtifacts",
+            fmtLong(month.totalArtifact),
+            artifactColor,
+        )
+
+        val graphsY = extraCardsY + extraCardsHeight + pad
+        val graphHeight = h - (graphsY - y) - pad
+        val halfWidth = (contentWidth - pad) / 2
+
+        if (month.moneyTimeline.size >= 2) {
+            renderGraph(graphics, x, graphsY, halfWidth, graphHeight, month.moneyTimeline, moneyColor, "Money / Minute")
+        } else {
+            renderEmptyGraph(graphics, x, graphsY, halfWidth, graphHeight, "Money / Minute")
+        }
+        if (month.tokenTimeline.size >= 2) {
+            renderGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, month.tokenTimeline, tokenColor, "Tokens / Minute")
         } else {
             renderEmptyGraph(graphics, x + halfWidth + pad, graphsY, halfWidth, graphHeight, "Tokens / Minute")
         }
