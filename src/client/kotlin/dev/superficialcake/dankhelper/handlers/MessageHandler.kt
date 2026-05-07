@@ -87,16 +87,18 @@ object MessageHandler {
                 val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
                 val (amount) = matchArtifact.destructured
 
-                StatsManager.addArtifact(amount.toLong())
-                logger.info("Found ${StatsManager.sumArtifact} this session")
+                StatsManager.addHudArtifact(amount.toLong())
+                StatsManager.addLogArtifact(amount.toLong())
+                logger.info("Found ${StatsManager.hudArtifact} this session")
             }
 
             text.contains("Increased Momentum") -> {
                 val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
                 val (_, amount) = matchMomentum.destructured
 
-                StatsManager.addMomentum(amount.toLong())
-                logger.info("Momentum increased to ${StatsManager.sumMomentum}")
+                StatsManager.addHudMomentum(amount.toLong())
+                StatsManager.addLogMomentum(amount.toLong())
+                logger.info("Momentum increased to ${StatsManager.hudMomentum}")
             }
 
             text.contains(username) -> {
