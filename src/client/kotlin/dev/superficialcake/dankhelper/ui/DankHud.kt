@@ -20,6 +20,7 @@ object DankHud {
         val translatedSessionTime = Component.translatable("text.hud.dankhelper.session_time").string
         val translatedFortune = Component.translatable("text.hud.dankhelper.fortune").string
         val translatedMomentum = Component.translatable("text.hud.dankhelper.momentum").string
+        val translatedArtifacts = Component.translatable("text.hud.dankhelper.artifacts").string
 
         val client = Minecraft.getInstance()
         if (client.options.hideGui || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
@@ -60,8 +61,11 @@ object DankHud {
             lines.add("""$translatedFortune §r$formattedFortune""")
         }
         if (config.showMomentum) {
-            val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
+            val formattedMomentum = "%,d".format(StatsManager.hudMomentum)
             lines.add("$translatedMomentum §r$formattedMomentum")
+        }
+        if (config.showArtifacts) {
+            lines.add("$translatedArtifacts §r${StatsManager.hudArtifact}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { font.width(it).toDouble() }.toInt() else 0
