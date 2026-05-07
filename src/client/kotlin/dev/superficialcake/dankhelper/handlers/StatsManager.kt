@@ -13,8 +13,10 @@ object StatsManager {
     private var sumSpentMoney = BigDecimal.ZERO
 
     var sumFortune = 0L
-    var sumMomentum = 0L
-    var sumArtifact = 0L
+    var hudMomentum = 0L
+    var hudArtifact = 0L
+    var loggedArtifact = 0L
+    var loggedMomentum = 0L
     var avgMpm = "0"
     var avgSpentPerMinute = "0"
     var avgTpm = "0"
@@ -45,9 +47,9 @@ object StatsManager {
         sumCrates = 0L
         sumKeys = 0L
         sumFortune = 0L
-        sumMomentum = 0L
+        hudMomentum = 0L
         sumSpentMoney = BigDecimal.ZERO
-        sumArtifact = 0L
+        hudArtifact = 0L
 
         moneyHistory.clear()
         spentHistory.clear()
@@ -70,6 +72,8 @@ object StatsManager {
         if (swingsHistory.size >= MAX_HISTORY) swingsHistory.removeAt(0)
 
         totalUpdates++
+
+        val activeMinutes = totalUpdates.toDouble()
 
         val currentAvgSpent =
             if (totalUpdates > 0) {
@@ -107,8 +111,8 @@ object StatsManager {
             swings,
             ScoreboardHandler.sessionBM,
             sumFortune,
-            sumMomentum,
-            sumArtifact,
+            loggedMomentum,
+            loggedArtifact,
             isCF,
         )
 
@@ -133,12 +137,20 @@ object StatsManager {
         sumFortune += amount
     }
 
-    fun addMomentum(amount: Long) {
-        sumMomentum += amount
+    fun addHudMomentum(amount: Long) {
+        hudMomentum += amount
     }
 
-    fun addArtifact(amount: Long) {
-        sumArtifact += amount
+    fun addLogMomentum(amount: Long) {
+        loggedMomentum += amount
+    }
+
+    fun addHudArtifact(amount: Long) {
+        hudArtifact += amount
+    }
+
+    fun addLogArtifact(amount: Long) {
+        loggedArtifact += amount
     }
 
     fun addMoneySpent(amount: BigDecimal) {
@@ -158,8 +170,8 @@ object StatsManager {
             sumSwings / n,
             ScoreboardHandler.sessionBM,
             sumFortune,
-            sumMomentum,
-            sumArtifact,
+            loggedMomentum,
+            loggedArtifact,
             isCF = false,
         )
     }
