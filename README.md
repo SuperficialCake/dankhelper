@@ -8,15 +8,23 @@ This project is a community driven tool and is not officially endorsed by or aff
 
 ## Features
 
-This mod adds a HUD to show helpful stats related to DankPrison. The mod will also log your ChampionFrenzies and FishingFrenzies.
+This mod adds a HUD to show helpful stats related to DankPrison. The hud tracks things, such as, Sunrise time, Income Per Minute, Total Artifacts, and more!
 
-![Preview of In-Game UI](./resources/images/preview.png)
+![Preview of In-Game UI](./previews/HUD%20Previeww.png)
 
 Your sessions are saved in `.minecraft/dankhelper/sessions` and your frenzies in `.minecraft/dankhelper/frenzies/<frenzy_type>`.
 
+You can view these CSVs in-game using `PG Down`
+
+![Preview of Trends Sscreen](./previews/Trends%20Screen%20Preview.png)
+
+You can also send your rewards to a discord webhook, just like the #rewards channel in the DankPrison discord!
+
+![Preview of Discord Webhook](./previews/Webhook%20Preview.png)
+
 ### Default Keybinds
 
-The mod has a few keybinids:
+The mod has a few keybinds:
 
 > END to manually end a session & reset the HUD.
 > 
@@ -25,6 +33,8 @@ The mod has a few keybinids:
 > Backslash to open the config
 > 
 > Comma to move the UI
+> 
+> PG_DOWN to open the Trends screen
 
 ## How It Works
 
@@ -49,9 +59,23 @@ Install [Mod Menu](https://modrinth.com/mod/modmenu/versions?g=1.21.11)
 
 Download the latest jar from the [Releases Page](https://github.com/SuperficialCake/dankhelper/releases), or compile from source.
 
+## Compilation Instructions
+
+Download source for your Minecraft version
+
+run `./gradle build`
+
+JAR is output to `./build/libs/`
+
 ## Contribution
 
 Feel free to contribute to the project. Please make an issue for any major changes.
+
+## Contributors
+
+[PepeNeutron](https://github.com/PepeNeutron)
+
+[YouAreACatgirl](https://github.com/tomdkap)
 
 ## License
 [GNU GPL v3](https://choosealicense.com/licenses/gpl-3.0/)
