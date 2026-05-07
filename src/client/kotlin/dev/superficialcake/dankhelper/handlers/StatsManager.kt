@@ -148,13 +148,14 @@ object StatsManager {
     fun forceSave() {
         if (totalUpdates == 0) return
 
+        val n = totalUpdates.toLong()
         DataHandler.logStats(
-            sumMoney.toPlainString(),
-            sumTokens,
-            sumCrates,
-            sumKeys,
-            sumBlocks,
-            sumSwings,
+            sumMoney.divide(BigDecimal.valueOf(n), 2, java.math.RoundingMode.HALF_UP).toPlainString(),
+            sumTokens / n,
+            sumCrates / n,
+            sumKeys / n,
+            sumBlocks / n,
+            sumSwings / n,
             ScoreboardHandler.sessionBM,
             sumFortune,
             sumMomentum,
