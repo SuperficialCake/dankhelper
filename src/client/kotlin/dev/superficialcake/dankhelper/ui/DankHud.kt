@@ -66,11 +66,11 @@ object DankHud : HudRenderCallback {
             lines.add("""$translatedFortune §r$formattedFortune""")
         }
         if (config.showMomentum) {
-            val formattedMomentum = "%,d".format(StatsManager.sumMomentum)
+            val formattedMomentum = "%,d".format(StatsManager.hudMomentum)
             lines.add("$translatedMomentum §r$formattedMomentum")
         }
         if (config.showArtifacts) {
-            lines.add("$translatedArtifacts §r${StatsManager.sumArtifact}")
+            lines.add("$translatedArtifacts §r${StatsManager.hudArtifact}")
         }
 
         val maxTextWidth = if (lines.isNotEmpty()) lines.maxOf { textRenderer.getWidth(it) } else 0
