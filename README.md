@@ -73,7 +73,9 @@ Feel free to contribute to the project. Please make an issue for any major chang
 
 ## Contributors
 
-[YouAreACatgirl](https://github.com/tomdkap)
+- [YouAreACatgirl](https://github.com/tomdkap)
+- [PepeNeutron](https://github.com/pepeneutron)
+
 
 ## License
 [GNU GPL v3](https://choosealicense.com/licenses/gpl-3.0/)
