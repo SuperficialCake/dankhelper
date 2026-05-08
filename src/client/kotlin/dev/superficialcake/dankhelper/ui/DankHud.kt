@@ -17,15 +17,15 @@ object DankHud {
     var currentWidth = 0
 
     fun onHudRender(drawContext: GuiGraphicsExtractor) {
+        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+
         val translatedSessionTime = Component.translatable("text.hud.dankhelper.session_time").string
         val translatedFortune = Component.translatable("text.hud.dankhelper.fortune").string
         val translatedMomentum = Component.translatable("text.hud.dankhelper.momentum").string
         val translatedArtifacts = Component.translatable("text.hud.dankhelper.artifacts").string
 
         val client = Minecraft.getInstance()
-        if (client.options.hideGui || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
-
-        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+        if (client.options.hideGui || !DankHelperClient.isConnected || !config.showHud) return
 
         val font = client.font
         val x = config.hudX
