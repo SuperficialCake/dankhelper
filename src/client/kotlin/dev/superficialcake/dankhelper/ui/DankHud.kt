@@ -17,15 +17,14 @@ object DankHud {
     var currentWidth = 0
 
     fun onHudRender(drawContext: DrawContext) {
+        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
         val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
         val translatedFortune = Text.translatable("text.hud.dankhelper.fortune").string
         val translatedMomentum = Text.translatable("text.hud.dankhelper.momentum").string
         val translatedArtifacts = Text.translatable("text.hud.dankhelper.artifacts").string
 
         val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
-
-        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+        if (client.options.hudHidden || !DankHelperClient.isConnected || !config.showHud) return
 
         val textRenderer = client.textRenderer
         val x = config.hudX
@@ -156,11 +155,11 @@ object DankHud {
             if (tw > labelWidth) {
                 val scale = labelWidth.toFloat() / tw
                 val matrices = context.matrices
-                matrices.pushMatrix()
-                matrices.translate(lx.toFloat(), ly.toFloat())
-                matrices.scale(scale, scale)
+                matrices.push()
+                matrices.translate(lx.toFloat(), ly.toFloat(), 0f)
+                matrices.scale(scale, scale, 1f)
                 context.drawTextWithShadow(textRenderer, text, 0, 0, color)
-                matrices.popMatrix()
+                matrices.pop()
             } else {
                 context.drawTextWithShadow(textRenderer, text, lx, ly, color)
             }
