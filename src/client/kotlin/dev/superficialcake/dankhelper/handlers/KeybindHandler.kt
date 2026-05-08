@@ -20,9 +20,9 @@ object KeybindHandler {
     lateinit var clothConfigKey: KeyBinding
     lateinit var trendsUIKey: KeyBinding
 
-    var showUI: Boolean = true
-
     fun init() {
+        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+
         resetSessionKey =
             registerKeyBinding(
                 KeyBinding(
@@ -36,7 +36,7 @@ object KeybindHandler {
         hideUIKey =
             registerKeyBinding(
                 KeyBinding(
-                    "key.dankhelper.hideUI",
+                    "key.dankhelper.hideUi",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
                     CATEGORY,
@@ -76,7 +76,7 @@ object KeybindHandler {
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.wasPressed()) {
-                    showUI = !showUI
+                    config.showHud = !config.showHud
                 }
                 while (resetSessionKey.wasPressed()) {
                     UtilFunctions.resetAll()

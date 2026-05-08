@@ -22,15 +22,15 @@ object DankHud : HudRenderCallback {
         drawContext: DrawContext,
         tickCounter: RenderTickCounter,
     ) {
+        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+
         val translatedSessionTime = Text.translatable("text.hud.dankhelper.session_time").string
         val translatedFortune = Text.translatable("text.hud.dankhelper.fortune").string
         val translatedMomentum = Text.translatable("text.hud.dankhelper.momentum").string
         val translatedArtifacts = Text.translatable("text.hud.dankhelper.artifacts").string
 
         val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !KeybindHandler.showUI) return
-
-        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+        if (client.options.hudHidden || !DankHelperClient.isConnected || !config.showHud) return
 
         val textRenderer = client.textRenderer
         val x = config.hudX
