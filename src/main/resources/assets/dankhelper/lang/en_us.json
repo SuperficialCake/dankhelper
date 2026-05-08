@@ -1,9 +1,9 @@
 {
   "key.categories.dankhelper": "Dank Helper",
-  "key.dankhelper.hideUI": "Hide UI",
-  "key.dankhelper.openTrendsScreen": "Open Trends",
-  "key.dankhelper.moveUI": "Reposition HUD",
+  "key.dankhelper.hideUi": "Hide UI",
+  "key.dankhelper.moveUi": "Reposition HUD",
   "key.dankhelper.openConfig": "Open Config",
+  "key.dankhelper.openTrendsScreen": "Open Trends Screen",
   "text.autoconfig.dankhelper.title": "Dank Helper Config",
   "key.dankhelper.resetSessionStats": "Reset Session Stats",
   "text.autoconfig.dankhelper.option.hudX": "X Position",
