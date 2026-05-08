@@ -41,7 +41,7 @@ object KeybindHandler {
         hideUIKey =
             registerKeyBinding(
                 KeyBinding(
-                    "key.dankhelper.hideUI",
+                    "key.dankhelper.hideUi",
                     InputUtil.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
                     CATEGORY,
