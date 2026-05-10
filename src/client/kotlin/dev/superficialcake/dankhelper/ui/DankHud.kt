@@ -2,7 +2,6 @@ package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.DankHelperClient
 import dev.superficialcake.dankhelper.config.DankConfig
-import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import dev.superficialcake.dankhelper.util.UtilFunctions
