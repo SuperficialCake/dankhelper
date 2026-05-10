@@ -13,7 +13,7 @@ class DankConfig : ConfigData {
     var webhookURL: String = ""
 
     // Toggles
-    var showHud: Boolean = true
+    var showHUD: Boolean = true
     var showSessionTime: Boolean = true
     var showSunriseTime: Boolean = true
     var showMPM: Boolean = true

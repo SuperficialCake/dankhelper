@@ -76,7 +76,7 @@ object KeybindHandler {
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.wasPressed()) {
-                    config.showHud = !config.showHud
+                    config.showHUD = !config.showHUD
                 }
                 while (resetSessionKey.wasPressed()) {
                     UtilFunctions.resetAll()
