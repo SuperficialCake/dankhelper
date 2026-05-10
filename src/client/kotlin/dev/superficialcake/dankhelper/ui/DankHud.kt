@@ -2,7 +2,6 @@ package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.DankHelperClient
 import dev.superficialcake.dankhelper.config.DankConfig
-import dev.superficialcake.dankhelper.handlers.KeybindHandler
 import dev.superficialcake.dankhelper.handlers.ScoreboardHandler
 import dev.superficialcake.dankhelper.handlers.StatsManager
 import dev.superficialcake.dankhelper.util.UtilFunctions
@@ -30,7 +29,7 @@ object DankHud : HudRenderCallback {
         val translatedArtifacts = Text.translatable("text.hud.dankhelper.artifacts").string
 
         val client = MinecraftClient.getInstance()
-        if (client.options.hudHidden || !DankHelperClient.isConnected || !config.showHud) return
+        if (client.options.hudHidden || !DankHelperClient.isConnected || !config.showHUD) return
 
         val textRenderer = client.textRenderer
         val x = config.hudX
