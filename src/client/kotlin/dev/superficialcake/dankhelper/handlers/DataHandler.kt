@@ -123,13 +123,12 @@ object DataHandler {
         val csvRow = "$utcTimestamp,$money,$tokens,$crates,$keys,$blocks,$swings,$sessionBM,$fortune,$momentum,$artifacts"
 
         try {
+            currentSessionFile.appendText("$csvRow\n")
+            currentDayFile.appendText("$csvRow\n")
+            StatsManager.loggedArtifact = 0L
+            StatsManager.loggedMomentum = 0L
             if (isCF) {
                 currentCFFile.appendText("$csvRow\n")
-            } else {
-                currentSessionFile.appendText("$csvRow\n")
-                currentDayFile.appendText("$csvRow\n")
-                StatsManager.loggedArtifact = 0L
-                StatsManager.loggedMomentum = 0L
             }
         } catch (e: Exception) {
             logger.error("Failed to append stats to CSV", e)
