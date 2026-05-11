@@ -23,6 +23,7 @@ object DataHandler {
 
     private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss")
+    private var rolloverRegistered = false
 
     private fun getUtcDateTime(): ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC)
 
@@ -34,12 +35,16 @@ object DataHandler {
 
         prepareSessionFile()
         prepareTrendFile()
-        registerMidnightRollover()
+
+        if (!rolloverRegistered) {
+            registerMidnightRollover()
+        }
     }
 
     private fun registerMidnightRollover() {
         var lastRecordedDate = getUtcDateString()
         var tickCounter = 0
+        rolloverRegistered = true
 
         ClientTickEvents.END_CLIENT_TICK.register { _ ->
             tickCounter++
