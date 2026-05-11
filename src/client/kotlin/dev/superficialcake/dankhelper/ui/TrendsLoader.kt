@@ -97,8 +97,9 @@ object TrendsLoader {
     fun loadWeeklyTrends(allDays: List<DayStats>): List<WeekStats> {
         if (allDays.isEmpty()) return emptyList()
 
-        val isoWeekYear = WeekFields.ISO.weekBasedYear()
-        val isoWeekNum = WeekFields.ISO.weekOfWeekBasedYear()
+        val sundayWeek = WeekFields.SUNDAY_START
+        val isoWeekYear = sundayWeek.weekBasedYear()
+        val isoWeekNum = sundayWeek.weekOfWeekBasedYear()
 
         return allDays
             .groupBy { it.date.get(isoWeekYear) * 100 + it.date.get(isoWeekNum) }
