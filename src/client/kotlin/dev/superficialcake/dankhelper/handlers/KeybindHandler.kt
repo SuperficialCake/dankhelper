@@ -27,7 +27,8 @@ object KeybindHandler {
     lateinit var trendsUIKey: KeyMapping
 
     fun init() {
-        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+        val holder = AutoConfig.getConfigHolder(DankConfig::class.java)
+        val config = holder.config
 
         resetSessionKey =
             registerKeyMapping(
@@ -81,7 +82,8 @@ object KeybindHandler {
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.consumeClick()) {
-                    config.showHud = !config.showHud
+                    config.showHUD = !config.showHUD
+                    holder.save()
                 }
                 while (resetSessionKey.consumeClick()) {
                     UtilFunctions.resetAll()
