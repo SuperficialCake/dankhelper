@@ -107,8 +107,8 @@ object TrendsLoader {
                 val sorted = days.sortedBy { it.date }
                 val anyDay = sorted.first().date
                 WeekStats(
-                    weekStart = anyDay.with(WeekFields.ISO.dayOfWeek(), 1),
-                    weekEnd = anyDay.with(WeekFields.ISO.dayOfWeek(), 7),
+                    weekStart = anyDay.with(sundayWeek.dayOfWeek(), 1),
+                    weekEnd = anyDay.with(sundayWeek.dayOfWeek(), 7),
                     days = sorted,
                     totalMoney = sorted.fold(BigDecimal.ZERO) { acc, d -> acc + d.totalMoney },
                     totalTokens = sorted.sumOf { it.totalTokens },
