@@ -21,7 +21,8 @@ object KeybindHandler {
     lateinit var trendsUIKey: KeyBinding
 
     fun init() {
-        val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+        val holder = AutoConfig.getConfigHolder(DankConfig::class.java)
+        val config = holder.config
 
         resetSessionKey =
             registerKeyBinding(
@@ -77,6 +78,7 @@ object KeybindHandler {
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.wasPressed()) {
                     config.showHUD = !config.showHUD
+                    holder.save()
                 }
                 while (resetSessionKey.wasPressed()) {
                     UtilFunctions.resetAll()
