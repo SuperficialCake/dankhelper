@@ -19,13 +19,20 @@ fun buildConfigScreen(parent: Screen?): Screen {
         ConfigBuilder
             .create()
             .setParentScreen(parent)
-            .setTitle(Component.translatable("title.dankhelper.config"))
+            .setTitle(Component.translatable("text.autoconfig.dankhelper.title"))
             .setSavingRunnable { holder.save() }
 
     val entries = eb.entryBuilder()
 
     // --- HUD Stats ---
     val statsCategory = eb.getOrCreateCategory(Component.literal("HUD Stats"))
+
+    statsCategory.addEntry(
+        entries
+            .startBooleanToggle(Component.literal("Show HUD"), config.showHUD)
+            .setSaveConsumer { config.showHUD = it }
+            .build(),
+    )
 
     statsCategory.addEntry(
         entries
@@ -119,6 +126,17 @@ fun buildConfigScreen(parent: Screen?): Screen {
         entries
             .startBooleanToggle(Component.literal("Show Swings Graph"), config.showSwingsGraph)
             .setSaveConsumer { config.showSwingsGraph = it }
+            .build(),
+    )
+
+    // --- Webhook ---
+
+    val webhookCategory = eb.getOrCreateCategory(Component.literal("Webhook"))
+
+    webhookCategory.addEntry(
+        entries
+            .startTextField(Component.literal("Webhook URL"), config.webhookURL)
+            .setSaveConsumer { config.webhookURL = it }
             .build(),
     )
 
