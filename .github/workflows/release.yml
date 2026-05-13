@@ -78,12 +78,6 @@ jobs:
           loaders: fabric
           game-versions: ${{ steps.props.outputs.mc_version }}
 
-          modrinth-dependencies: |
-            fabric-api              | depends | >=${{ steps.props.outputs.fabric_api_version }}
-            cloth-config            | depends | >=${{ steps.props.outputs.cloth_config_version }}
-            modmenu                 | depends | >=${{ steps.props.outputs.mod_menu_version }}
-            fabric-language-kotlin  | depends | >=${{ steps.props.outputs.fabric_kotlin_version }}
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
