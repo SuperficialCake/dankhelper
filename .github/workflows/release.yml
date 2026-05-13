@@ -73,7 +73,7 @@ jobs:
           files: release-artifacts/*.jar
 
           version: ${{ steps.props.outputs.mod_version }}+MC${{ steps.props.outputs.mc_version }}
-          version-type: alpha
+          version-type: release
 
           loaders: fabric
           game-versions: ${{ steps.props.outputs.mc_version }}
