@@ -9,9 +9,6 @@ class DankConfig : ConfigData {
     var hudX: Int = 10
     var hudY: Int = 60
 
-    // Webhook
-    var webhookURL: String = ""
-
     // Toggles
     var showHUD: Boolean = true
     var showSessionTime: Boolean = true
