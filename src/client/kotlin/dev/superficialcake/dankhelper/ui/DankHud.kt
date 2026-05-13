@@ -24,7 +24,7 @@ object DankHud {
         val translatedArtifacts = Component.translatable("text.hud.dankhelper.artifacts").string
 
         val client = Minecraft.getInstance()
-        if (client.options.hideGui || !DankHelperClient.isConnected || !config.showHud) return
+        if (client.options.hideGui || !DankHelperClient.isConnected || !config.showHUD) return
 
         val font = client.font
         val x = config.hudX
