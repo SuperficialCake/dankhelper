@@ -129,17 +129,6 @@ fun buildConfigScreen(parent: Screen?): Screen {
             .build(),
     )
 
-    // --- Webhook ---
-
-    val webhookCategory = eb.getOrCreateCategory(Text.literal("Webhook"))
-
-    webhookCategory.addEntry(
-        entries
-            .startTextField(Text.literal("Webhook URL"), config.webhookURL)
-            .setSaveConsumer { config.webhookURL = it }
-            .build(),
-    )
-
     // --- Champion Frenzy ---
     val frenzyCategory = eb.getOrCreateCategory(Text.literal("Champion Frenzy"))
 
