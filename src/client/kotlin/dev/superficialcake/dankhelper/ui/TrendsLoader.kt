@@ -97,8 +97,9 @@ object TrendsLoader {
     fun loadWeeklyTrends(allDays: List<DayStats>): List<WeekStats> {
         if (allDays.isEmpty()) return emptyList()
 
-        val isoWeekYear = WeekFields.ISO.weekBasedYear()
-        val isoWeekNum = WeekFields.ISO.weekOfWeekBasedYear()
+        val sundayWeek = WeekFields.SUNDAY_START
+        val isoWeekYear = sundayWeek.weekBasedYear()
+        val isoWeekNum = sundayWeek.weekOfWeekBasedYear()
 
         return allDays
             .groupBy { it.date.get(isoWeekYear) * 100 + it.date.get(isoWeekNum) }
@@ -106,8 +107,8 @@ object TrendsLoader {
                 val sorted = days.sortedBy { it.date }
                 val anyDay = sorted.first().date
                 WeekStats(
-                    weekStart = anyDay.with(WeekFields.ISO.dayOfWeek(), 1),
-                    weekEnd = anyDay.with(WeekFields.ISO.dayOfWeek(), 7),
+                    weekStart = anyDay.with(sundayWeek.dayOfWeek(), 1),
+                    weekEnd = anyDay.with(sundayWeek.dayOfWeek(), 7),
                     days = sorted,
                     totalMoney = sorted.fold(BigDecimal.ZERO) { acc, d -> acc + d.totalMoney },
                     totalTokens = sorted.sumOf { it.totalTokens },
