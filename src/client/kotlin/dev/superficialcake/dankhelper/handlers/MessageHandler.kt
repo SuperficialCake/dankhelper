@@ -1,7 +1,7 @@
 package dev.superficialcake.dankhelper.handlers
 
 import dev.superficialcake.dankhelper.config.DankConfig
-import dev.superficialcake.dankhelper.util.RewardsWebhook
+import dev.superficialcake.dankhelper.util.DiscordWebhook
 import dev.superficialcake.dankhelper.util.UtilFunctions
 import dev.superficialcake.dankhelper.util.UtilFunctions.parseSuffixedNum
 import me.shedaniel.autoconfig.AutoConfig
@@ -20,7 +20,7 @@ object MessageHandler {
     private val FORTUNE_PATTERN = """^\((.*)\) Increased Fortune: \+(\d+)""".toRegex()
     private val MOMENTUM_PATTERN = """^\((Enchants)\) Increased Momentum: \+(\d+)""".toRegex()
     private val ARTIFACT_PATTERN =
-        """^(?:\((?:Mining|Fishing|Auto-Miner|OverDrive|OfflineAuto-Miner)\)\s*(?:Found:?\s*)?|(?:\s*-\s*))(\d+)x (?!Random)(.*?)\sArtifact(?:\s\(.*?\))?$"""
+        """^(?:\((Mining|Fishing|Auto-Miner|OverDrive|OfflineAuto-Miner)\)\s*(?:Found:?\s*)?|(?:\s*-\s*))(\d+)x (?!Random)(.*?)\sArtifact(?:\s\(.*?\))?$"""
             .toRegex(RegexOption.IGNORE_CASE)
     private val RANKUP_PATTERN = """\(Rankup\).*?Cost:\s*\$?([\d,]+)""".toRegex()
     private val REWARDS_PATTERN = """.* (Mined|Fished) ([\d]+)x (.*)""".toRegex()
@@ -85,7 +85,11 @@ object MessageHandler {
 
             text.contains("Artifact") -> {
                 val matchArtifact = ARTIFACT_PATTERN.find(text) ?: return
-                val (amount) = matchArtifact.destructured
+                val (source, amount, type) = matchArtifact.destructured
+
+                if (config.webhookURL.isNotBlank()) {
+                    DiscordWebhook.sendArtReward(username, strippedUUID, source, amount, type)
+                }
 
                 StatsManager.addHudArtifact(amount.toLong())
                 StatsManager.addLogArtifact(amount.toLong())
@@ -95,6 +99,10 @@ object MessageHandler {
             text.contains("Increased Momentum") -> {
                 val matchMomentum = MOMENTUM_PATTERN.find(text) ?: return
                 val (_, amount) = matchMomentum.destructured
+
+                if (config.webhookURL.isNotBlank()) {
+                    DiscordWebhook.sendMomReward(username, strippedUUID, amount)
+                }
 
                 StatsManager.addHudMomentum(amount.toLong())
                 StatsManager.addLogMomentum(amount.toLong())
@@ -106,7 +114,7 @@ object MessageHandler {
 
                 val (action, amount, reward) = matchRewards.destructured
                 if (config.webhookURL.isNotBlank()) {
-                    RewardsWebhook.sendReward(username, strippedUUID, action, amount, reward)
+                    DiscordWebhook.sendReward(username, strippedUUID, action, amount, reward)
                 }
             }
 
