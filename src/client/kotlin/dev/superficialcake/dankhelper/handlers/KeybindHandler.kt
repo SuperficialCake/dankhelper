@@ -3,9 +3,11 @@ package dev.superficialcake.dankhelper.handlers
 import com.mojang.blaze3d.platform.InputConstants
 import dev.superficialcake.dankhelper.DankHelper
 import dev.superficialcake.dankhelper.compat.buildConfigScreen
+import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
 import dev.superficialcake.dankhelper.ui.TrendsScreen
 import dev.superficialcake.dankhelper.util.UtilFunctions
+import me.shedaniel.autoconfig.AutoConfig
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper.registerKeyMapping
 import net.minecraft.client.KeyMapping
@@ -24,9 +26,10 @@ object KeybindHandler {
     lateinit var clothConfigKey: KeyMapping
     lateinit var trendsUIKey: KeyMapping
 
-    var showUI: Boolean = true
-
     fun init() {
+        val holder = AutoConfig.getConfigHolder(DankConfig::class.java)
+        val config = holder.config
+
         resetSessionKey =
             registerKeyMapping(
                 KeyMapping(
@@ -40,7 +43,7 @@ object KeybindHandler {
         hideUIKey =
             registerKeyMapping(
                 KeyMapping(
-                    "key.dankhelper.hideUI",
+                    "key.dankhelper.hideUi",
                     InputConstants.Type.KEYSYM,
                     GLFW.GLFW_KEY_H,
                     CATEGORY,
@@ -79,7 +82,8 @@ object KeybindHandler {
         ClientTickEvents.END_CLIENT_TICK.register(
             ClientTickEvents.EndTick { client ->
                 while (hideUIKey.consumeClick()) {
-                    showUI = !showUI
+                    config.showHUD = !config.showHUD
+                    holder.save()
                 }
                 while (resetSessionKey.consumeClick()) {
                     UtilFunctions.resetAll()

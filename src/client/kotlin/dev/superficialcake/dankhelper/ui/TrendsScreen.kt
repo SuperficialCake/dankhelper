@@ -813,7 +813,7 @@ class TrendsScreen : Screen(Component.literal("Trends")) {
         val cardHeight = 34
         val ffMetrics =
             listOf(
-                Triple("§6§lKeys", fmtLong(ff.keys), keyColor),
+                Triple("§6§lRare Keys", fmtLong(ff.keys), keyColor),
                 Triple("§3§lFish", fmtLong(ff.fish), fishColor),
                 Triple("§7§lCasts", fmtLong(ff.casts), dimmedTextColor),
             )
