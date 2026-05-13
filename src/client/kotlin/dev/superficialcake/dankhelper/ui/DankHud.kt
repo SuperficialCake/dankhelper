@@ -154,11 +154,11 @@ object DankHud {
             if (tw > labelWidth) {
                 val scale = labelWidth.toFloat() / tw
                 val matrices = context.matrices
-                matrices.push()
-                matrices.translate(lx.toFloat(), ly.toFloat(), 0f)
-                matrices.scale(scale, scale, 1f)
+                matrices.pushMatrix()
+                matrices.translate(lx.toFloat(), ly.toFloat())
+                matrices.scale(scale, scale)
                 context.drawTextWithShadow(textRenderer, text, 0, 0, color)
-                matrices.pop()
+                matrices.popMatrix()
             } else {
                 context.drawTextWithShadow(textRenderer, text, lx, ly, color)
             }
