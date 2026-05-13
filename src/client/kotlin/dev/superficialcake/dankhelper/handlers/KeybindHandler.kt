@@ -1,5 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.compat.buildConfigScreen
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
 import dev.superficialcake.dankhelper.ui.TrendsScreen
@@ -89,9 +90,7 @@ object KeybindHandler {
                     }
                 }
                 while (clothConfigKey.wasPressed()) {
-                    client.setScreen(
-                        AutoConfig.getConfigScreen(DankConfig::class.java, client.currentScreen).get(),
-                    )
+                    client.setScreen(buildConfigScreen(client.currentScreen))
                 }
                 while (trendsUIKey.wasPressed()) {
                     if (client.currentScreen == null) {
