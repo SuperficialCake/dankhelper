@@ -1,5 +1,6 @@
 package dev.superficialcake.dankhelper.handlers
 
+import dev.superficialcake.dankhelper.DankHelperClient
 import dev.superficialcake.dankhelper.compat.buildConfigScreen
 import dev.superficialcake.dankhelper.config.DankConfig
 import dev.superficialcake.dankhelper.ui.EditHud
@@ -85,7 +86,8 @@ object KeybindHandler {
                     UtilFunctions.resetAll()
                 }
                 while (moveUIKey.wasPressed()) {
-                    if (client.currentScreen == null) {
+                    if (client.currentScreen == null && config.showHUD && DankHelperClient.isConnected) {
+                        EditHud.verifyBounds()
                         client.setScreen(EditHud())
                     }
                 }

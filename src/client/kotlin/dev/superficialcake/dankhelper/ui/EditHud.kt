@@ -2,6 +2,7 @@ package dev.superficialcake.dankhelper.ui
 
 import dev.superficialcake.dankhelper.config.DankConfig
 import me.shedaniel.autoconfig.AutoConfig
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
@@ -100,4 +101,26 @@ class EditHud : Screen(Text.literal("Edit HUD Position")) {
     }
 
     override fun shouldPause(): Boolean = false
+
+    companion object {
+        fun verifyBounds() {
+            val client = MinecraftClient.getInstance()
+            val config = AutoConfig.getConfigHolder(DankConfig::class.java).config
+            val w = DankHud.currentWidth
+            val h = DankHud.currentHeight
+
+            val screenW = client.window.scaledHeight
+            val screenH = client.window.scaledHeight
+
+            val minX = 6
+            val minY = 6
+            val maxX = maxOf(minX, screenW - w)
+            val maxY = maxOf(minY, screenH - h)
+
+            config.hudX = config.hudX.coerceIn(minX, maxX)
+            config.hudY = config.hudY.coerceIn(minY, maxY)
+
+            AutoConfig.getConfigHolder(DankConfig::class.java).save()
+        }
+    }
 }
