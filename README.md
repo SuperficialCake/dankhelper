@@ -18,9 +18,6 @@ You can view these CSVs in-game using `PG Down`
 
 ![Preview of Trends Sscreen](./previews/Trends%20Screen%20Preview.png)
 
-You can also send your rewards to a discord webhook, just like the #rewards channel in the DankPrison discord!
-
-![Preview of Discord Webhook](./previews/Webhook%20Preview.png)
 
 ### Default Keybinds
 
