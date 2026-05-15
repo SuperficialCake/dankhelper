@@ -80,10 +80,10 @@ object UtilFunctions {
     fun getFormattedTime(startTime: Long): String {
         if (startTime == 0L) return "00:00:00"
 
-        val s = (System.currentTimeMillis() - startTime) / 1000
-        val hours = s / 3600
-        val minutes = (s % 3600) / 60
-        val seconds = s % 60
+        val unformattedSeconds = (System.currentTimeMillis() - startTime) / 1000
+        val hours = unformattedSeconds / 3600
+        val minutes = (unformattedSeconds % 3600) / 60
+        val seconds = unformattedSeconds % 60
 
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
