@@ -1,6 +1,7 @@
 # Additions
 
 * Reposition HUD upon pressing "EditHUD" keybind if HUD falls outside screen bounds
+* Add a stretch reminder
 
 # Changes
 
