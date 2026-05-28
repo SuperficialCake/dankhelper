@@ -444,7 +444,8 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
         val totals =
             "§aMoney: §f${UtilFunctions.formatNumber(day.totalMoney.toDouble())}" +
                 "   §bTokens: §f${fmtLong(day.totalTokens)}" +
-                "   §eBlocks: §f${fmtLong(day.totalBlocks)}"
+                "   §eBlocks: §f${fmtLong(day.totalBlocks)}" +
+                "   §6Crates: §f${fmtLong(day.totalCrates)}"
         context.drawTextWithShadow(
             textRenderer,
             totals,
@@ -482,8 +483,6 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
         val extraCardsHeight = 31
         val halfCardWidth = (contentWidth - buttonGap) / 2
 
-        val momentumCardY = cardsY + cardHeight + buttonGap
-        val momentumCardHeight = 31
         renderStatCard(
             context,
             x,
@@ -561,7 +560,8 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
         val totals =
             "§aMoney: §f${UtilFunctions.formatNumber(week.totalMoney.toDouble())}" +
                 "   §bTokens: §f${fmtLong(week.totalTokens)}" +
-                "   §eBlocks: §f${fmtLong(week.totalBlocks)}"
+                "   §eBlocks: §f${fmtLong(week.totalBlocks)}" +
+                "   §6Crates: §f${fmtLong(week.totalCrates)}"
         context.drawTextWithShadow(
             textRenderer,
             totals,
@@ -659,7 +659,8 @@ class TrendsScreen : Screen(Text.literal("Trends")) {
         val totals =
             "§aMoney: §f${UtilFunctions.formatNumber(month.totalMoney.toDouble())}" +
                 "   §bTokens: §f${fmtLong(month.totalTokens)}" +
-                "   §eBlocks: §f${fmtLong(month.totalBlocks)}"
+                "   §eBlocks: §f${fmtLong(month.totalBlocks)}" +
+                "   §6Crates: §f${fmtLong(month.totalCrates)}"
         context.drawTextWithShadow(
             textRenderer,
             totals,

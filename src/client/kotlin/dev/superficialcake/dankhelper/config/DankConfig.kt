@@ -24,6 +24,7 @@ class DankConfig : ConfigData {
     var showFortune: Boolean = true
     var showMomentum: Boolean = true
     var showArtifacts: Boolean = false
+    var stretchReminder: Boolean = false
 
     // Graph Toggles
     var showMoneyGraph: Boolean = true

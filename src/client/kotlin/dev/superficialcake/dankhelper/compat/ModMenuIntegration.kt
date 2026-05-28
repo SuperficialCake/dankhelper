@@ -130,12 +130,19 @@ fun buildConfigScreen(parent: Screen?): Screen {
     )
 
     // --- Champion Frenzy ---
-    val frenzyCategory = eb.getOrCreateCategory(Text.literal("Champion Frenzy"))
+    val miscCategory = eb.getOrCreateCategory(Text.literal("Misc"))
 
-    frenzyCategory.addEntry(
+    miscCategory.addEntry(
         entries
             .startBooleanToggle(Text.literal("Champion Frenzy HUD Logging"), config.championFrenzyHudLogging)
             .setSaveConsumer { config.championFrenzyHudLogging = it }
+            .build(),
+    )
+
+    miscCategory.addEntry(
+        entries
+            .startBooleanToggle(Text.literal("Water/Stretch Reminder"), config.stretchReminder)
+            .setSaveConsumer { config.stretchReminder = it }
             .build(),
     )
 
